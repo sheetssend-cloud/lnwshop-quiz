@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>กล่องทดลองสอบ</title>
+  <style>
+    body{font-family:"Sarabun",sans-serif;background:#f0f2f5;margin:0;padding:20px}
+    .quiz-box{max-width:800px;margin:auto;background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.08);padding:20px}
+    .quiz-header{background:linear-gradient(135deg,#005c97,#363795);color:#fff;padding:14px;border-radius:10px;margin-bottom:20px}
+    .quiz-header h2{margin:0}
+    .question{font-weight:bold;margin-bottom:10px}
+    .choices{list-style:none;padding:0}
+    .choices li{margin:8px 0}
+    .choices label{display:flex;align-items:center;gap:8px;background:#f8f9fa;border:2px solid #ced4da;border-radius:8px;padding:10px;cursor:pointer}
+    .choices input{margin:0}
+    .choices .correct{background:#d1e7dd;border-color:#198754;color:#0f5132}
+    .choices .wrong{background:#f8d7da;border-color:#dc3545;color:#842029}
+    .explain{background:#f8f9fa;border-left:5px solid #6c757d;padding:10px;margin-top:10px;display:none}
+    .actions{margin-top:15px;display:flex;gap:10px}
+    button{padding:10px 18px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+    #submit{background:#0d6efd;color:#fff}
+    #next{background:#6c757d;color:#fff;display:none}
+    #restart{background:#28a745;color:#fff;display:none}
+    #score{font-size:1.5rem;font-weight:bold;margin-top:10px}
+  </style>
+</head>
+<body>
+<div class="quiz-box">
+  <div class="quiz-header">
+    <h2>แบบทดลองสอบ: นักวิชาการพาณิชย์</h2>
+    <p>กรมเจรจาการค้าระหว่างประเทศ</p>
+  </div>
+  <div id="panel">
+    <div id="question" class="question"></div>
+    <ul id="choices" class="choices"></ul>
+    <div id="explain" class="explain">
+      <b>เฉลย:</b> <span id="explain-text"></span>
+    </div>
+    <div class="actions">
+      <button id="submit" disabled>ส่งคำตอบ</button>
+      <button id="next">ข้อถัดไป</button>
+    </div>
+    <div id="progress"></div>
+  </div>
+  <div id="result" style="text-align:center;display:none">
+    <h3>จบแบบทดลองสอบ</h3>
+    <div id="score"></div>
+    <button id="restart">ทำใหม่</button>
+  </div>
+</div>
+
+<script>
+const data=[
+ {q:"ข้อใดคือหลักการสำคัญของ WTO ที่ส่งเสริมการแข่งขันเท่าเทียม?",
+  a:["หลักการไม่เลือกปฏิบัติ (Non-Discrimination)","หลักการค้าเสรี","หลักการโปร่งใส","มาตรการปกป้อง"],
+  correct:0,
+  ex:"หลักการ MFN + National Treatment"},
+ {q:"ความตกลงใดของ WTO เกี่ยวข้องกับทรัพย์สินทางปัญญา?",
+  a:["GATT","GATS","TRIPS","TBT"],
+  correct:2,
+  ex:"TRIPS = Trade-Related Aspects of Intellectual Property Rights"}
+];
+let idx=0,score=0,answered=false;
+
+const qEl=document.getElementById('question');
+const cEl=document.getElementById('choices');
+const submit=document.getElementById('submit');
+const next=document.getElementById('next');
+const progress=document.getElementById('progress');
+const explain=document.getElementById('explain');
+const explainText=document.getElementById('explain-text');
+const panel=document.getElementById('panel');
+const result=document.getElementById('result');
+const scoreEl=document.getElementById('score');
+const restart=document.getElementById('restart');
+
+function render(){
+  answered=false;
+  submit.disabled=true;next.style.display="none";explain.style.display="none";
+  qEl.textContent=`ข้อ ${idx+1}. ${data[idx].q}`;
+  progress.textContent=`ข้อ ${idx+1} / ${data.length}`;
+  cEl.innerHTML="";
+  data[idx].a.forEach((t,i)=>{
+    const li=document.createElement('li');
+    const label=document.createElement('label');
+    const input=document.createElement('input');
+    input.type="radio";input.name="opt";input.value=i;
+    input.addEventListener("change",()=>{if(!answered)submit.disabled=false});
+    label.appendChild(input);
+    const span=document.createElement('span');
+    span.textContent="กขคง"[i]+". "+t;
+    label.appendChild(span);
+    li.appendChild(label);cEl.appendChild(li);
+  });
+}
+function check(){
+  if(answered)return;
+  const sel=cEl.querySelector('input[name="opt"]:checked');
+  if(!sel)return;
+  answered=true;submit.disabled=true;
+  const ans=parseInt(sel.value);
+  [...cEl.querySelectorAll('label')].forEach((lb,i)=>{
+    if(i===data[idx].correct)lb.classList.add('correct');
+    if(i===ans && i!==data[idx].correct)lb.classList.add('wrong');
+    lb.querySelector('input').disabled=true;
+  });
+  if(ans===data[idx].correct)score++;
+  explainText.textContent=data[idx].ex;explain.style.display="block";
+  next.style.display="inline-block";
+  if(idx===data.length-1)next.textContent="สรุปผล";
+}
+function goNext(){
+  if(idx<data.length-1){idx++;render();}
+  else{panel.style.display="none";result.style.display="block";scoreEl.textContent=`คุณได้ ${score}/${data.length}`;restart.style.display="inline-block";}
+}
+function restartQuiz(){idx=0;score=0;panel.style.display="block";result.style.display="none";render();}
+submit.addEventListener("click",check);
+next.addEventListener("click",goNext);
+restart.addEventListener("click",restartQuiz);
+render();
+</script>
+</body>
+</html>
