@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ตัวตั้งค่า & ตัวสร้างไฟล์ HTML | Open Sheets</title>
+<title>ตั้งค่าสำเร็จรูป + แปลงข้อความเป็น data | Open Sheets</title>
 <style>
   :root{--p:#005c97;--p2:#363795}
   *{box-sizing:border-box}
@@ -31,8 +31,8 @@
 <body>
 <div class="wrap">
   <header>
-    <h2>ตัวตั้งค่า & ตัวสร้างไฟล์ HTML (แยกจากหน้าทดสอบ)</h2>
-    <div class="muted">กรอกข้อมูล → วาง <code class="k">data</code> → กด “สร้างไฟล์ HTML” เพื่อดาวน์โหลดไฟล์ทดสอบสำหรับอัปขึ้นเว็บ</div>
+    <h2>ตัวตั้งค่าหน้าแบบทดสอบ (แยก) + ตัวแปลงข้อความเป็น data</h2>
+    <div class="muted">วาง “ชุดข้อสอบแบบข้อความดิบ” ➜ แปลงเป็น <code class="k">data</code> ➜ กด “สร้างไฟล์ HTML” เพื่อดาวน์โหลดไฟล์ทดสอบสำหรับอัปขึ้นเว็บ</div>
   </header>
 
   <div class="body">
@@ -61,55 +61,143 @@
         <label>ชื่อไฟล์ (ไม่ต้องใส่ .html)</label>
         <input id="fFilename" placeholder="เช่น นักวิชาการพาณิชย์-กรมเจรจาฯ">
       </div>
+
       <div class="row" style="grid-column:1/-1">
-        <label>ข้อมูลข้อสอบ <span class="muted">(วางได้ทั้ง <code class="k">const data=[...]</code> หรือแค่อาร์เรย์)</span></label>
-        <textarea id="fData" placeholder='ตัวอย่าง:
-[
-  {"q":"คำถาม 1?","a":["ก","ข","ค","ง"],"c":0,"ex":"อธิบาย"},
-  {"q":"คำถาม 2?","a":["ก","ข","ค","ง"],"c":2}
-]'></textarea>
+        <label>วาง “ข้อความดิบ” (รูปแบบ ข้อ 1… ตัวเลือก ก. ข. ค. ง. + เฉลย: + อธิบาย:)</label>
+        <textarea id="fPlain" placeholder="วางข้อความตามตัวอย่างของคุณที่นี่"></textarea>
+      </div>
+
+      <div class="row" style="grid-column:1/-1">
+        <label>ผลลัพธ์ data (แก้ไขได้)</label>
+        <textarea id="fData" placeholder="[ ... ] จะถูกเติมอัตโนมัติหลังแปลง"></textarea>
       </div>
     </div>
 
     <div class="btns">
-      <button id="btnSample" class="btn ghost">โหลดตัวอย่าง data</button>
-      <button id="btnValidate" class="btn sec">ตรวจสอบรูปแบบ</button>
+      <button id="btnParse" class="btn">แปลง “ข้อความดิบ” ➜ data</button>
+      <button id="btnValidate" class="btn sec">ตรวจสอบ data</button>
       <button id="btnGen" class="btn">สร้างไฟล์ HTML</button>
       <button id="btnCfg" class="btn ghost">ดาวน์โหลด config.json</button>
-      <input type="file" id="fileImport" accept=".json,.txt" hidden>
-      <button id="btnImport" class="btn ghost">นำเข้าจากไฟล์</button>
+      <button id="btnClear" class="btn ghost">ล้างข้อมูล</button>
     </div>
 
     <div id="ok" class="ok">พร้อมใช้งาน ✅</div>
     <div id="err" class="err">พบข้อผิดพลาด</div>
 
     <div class="note">
-      เคล็ดลัด: วางทั้งก้อนที่คัดลอกจากโค้ดเดิมแบบ <code class="k">const data = [ ... ]</code> ก็ได้ ระบบจะดึงเฉพาะอาร์เรย์ให้เอง
-      <br>ไม่บังคับครบ 10 ข้อ / จำนวนตัวเลือก 2–6 ก็ได้ / <code class="k">ex</code> จะมีหรือไม่มีก็ได้
+      <b>วิธีใช้งานเร็ว ๆ</b>:
+      1) กรอกหัวข้อ/หน่วยงาน/โลโก้/LINE/ลิงก์ 2) วาง “ข้อความดิบ” แบบตัวอย่าง 3) กด “แปลง” 4) กด “สร้างไฟล์ HTML”
+      <br>รองรับจำนวนข้อ ~2–50 ข้อ, ตัวเลือก 2–6 ข้อ, “อธิบาย:” จะมีหรือไม่มีก็ได้
     </div>
   </div>
 </div>
 
 <script>
-/* ===== ตัวอย่าง data (เปลี่ยนได้) ===== */
-const SAMPLE_DATA = [
-  {q:"ข้อใดคือหลักการที่สำคัญที่สุดขององค์การการค้าโลก (WTO) ที่ส่งเสริมการแข่งขันอย่างเป็นธรรม?",
-   a:["หลักการไม่เลือกปฏิบัติ (Non-Discrimination)","หลักการค้าเสรี (Free Trade)","หลักการโปร่งใส (Transparency)","มาตรการปกป้อง (Safeguard)"], c:0, ex:"รวม MFN + National Treatment ให้แข่งขันเท่าเทียม"},
-  {q:"ความตกลงใดของ WTO เกี่ยวกับทรัพย์สินทางปัญญา?", a:["GATT","GATS","TRIPS","TBT"], c:2, ex:"TRIPS = Trade-Related Aspects of IPR"},
-  {q:"ข้อใดไม่ใช่เสาหลักของ AEC Blueprint?", a:["ตลาดและฐานการผลิตเดียว","เพิ่มขีดความสามารถการแข่งขัน","รวมกับเศรษฐกิจโลก","กองทุนการเงินอาเซียน"], c:3, ex:"AEC 2025 มี 4 เสา ไม่รวมกองทุน"},
-  {q:"กฎว่าด้วยแหล่งกำเนิดสินค้า (Rules of Origin) สำคัญเพราะ?", a:["กำหนดภาษีแน่นอนทุกชนิด","ยืนยันว่าสินค้าที่ได้สิทธิเป็นของภาคีจริง","ควบคุม SPS","จำกัดโควตา"], c:1, ex:"กันสวมสิทธิ ต้องพิสูจน์สัญชาติสินค้า"},
-  {q:'"Single Undertaking" หมายถึง?', a:["รับบางข้อตกลงได้","ต้องรับทั้งชุดหรือปฏิเสธทั้งชุด","เจรจาทีละหัวข้อ","พัฒนาได้ยกเว้นส่วนใหญ่"], c:1, ex:'“Nothing is agreed until everything is agreed.”'},
-  {q:"หน่วยงานไทยที่ไต่สวน Anti-Dumping?", a:["กรมศุลกากร","กรมเจรจาการค้าระหว่างประเทศ","กรมการค้าต่างประเทศ","สคก.การแข่งขันทางการค้า"], c:2, ex:"DFT ดูแล AD/CVD/Safeguards"},
-  {q:"ความต่างเด่น RCEP vs CPTPP?", a:["RCEP มาตรฐานแรงงานสูงกว่า","RCEP ริเริ่มโดยจีน, CPTPP โดยสหรัฐ","RCEP มีสมาชิก/ขนาดเศรษฐกิจรวมใหญ่กว่า","CPTPP เน้นสินค้า RCEP เน้นบริการ"], c:2, ex:"RCEP 15 ประเทศ ใหญ่สุดเมื่อวัด GDP+ประชากร"},
-  {q:"BATNA คือ?", a:["ข้อเสนอที่อีกฝ่ายดีที่สุด","จุดยืนสุดท้าย","ทางเลือกดีที่สุดถ้าเจรจาล้มเหลว","ข้อตกลงเบื้องต้น"], c:2, ex:"BATNA แข็งแรง = อำนาจต่อรองสูง"},
-  {q:"CBAM ระยะแรก EU กระทบสินค้ากลุ่มใดมาก?", a:["เกษตร/อาหาร","เหล็ก อะลูมิเนียม ปุ๋ย (ฯลฯ)","อิเล็กทรอนิกส์/ยานยนต์","สิ่งทอ"], c:1, ex:"กลุ่มปล่อยคาร์บอนสูง เช่น เหล็ก ปุ๋ย ซีเมนต์"},
-  {q:"National Single Window (NSW) ของไทยคือ?", a:["พอร์ทัล BOI","ศูนย์กลางข้อมูลนำเข้า-ส่งออก/โลจิสติกส์จุดเดียว","คลังกฎหมายการค้า","แพลตฟอร์มเจรจาการค้ารัฐ"], c:1, ex:"ลดซ้ำซ้อน เอกสารผ่านช่องทางเดียว"}
-];
+/* ========= Helper DOM ========= */
+const $ = id => document.getElementById(id);
+const fTitle=$('fTitle'), fSub=$('fSub'), fLogo=$('fLogo'), fLine=$('fLine'), fShop=$('fShop'), fFilename=$('fFilename');
+const fPlain=$('fPlain'), fData=$('fData');
+const btnParse=$('btnParse'), btnValidate=$('btnValidate'), btnGen=$('btnGen'), btnCfg=$('btnCfg'), btnClear=$('btnClear');
+const okBox=$('ok'), errBox=$('err');
+function showOK(msg){ okBox.textContent=msg||"พร้อมใช้งาน ✅"; okBox.style.display='block'; errBox.style.display='none'; }
+function showErr(msg){ errBox.textContent=msg||"พบข้อผิดพลาด"; errBox.style.display='block'; okBox.style.display='none'; }
 
-/* ===== โครงหน้าแบบทดสอบที่ฝังลงในไฟล์ปลายทาง ===== */
+/* ========= Parsing core =========
+   รับ “ข้อความดิบ” รูปแบบ:
+   ข้อ 1. คำถาม...
+   ก. ตัวเลือก
+   ข. ตัวเลือก
+   ค. ตัวเลือก
+   ง. ตัวเลือก
+   (รองรับ 2–6 ตัวเลือก, เว้นวรรค/ขึ้นบรรทัดใหม่ได้)
+   เฉลย: ง. ...
+   อธิบาย: ข้อความ...
+*/
+const TH_CHOICE = ["ก","ข","ค","ง","จ","ฉ"]; // เผื่อเกิน 4 ตัวเลือก
+const CHOICE_REGEX = /^[กขคงจฉ]\s*[\.\)]\s*/; // เช่น "ก. " หรือ "ก) "
+const ANSWER_REGEX = /^เฉลย\s*[:：]\s*(.*)$/;   // ดึงทั้งบรรทัด
+const EXPL_REGEX    = /^อธิบาย\s*[:：]\s*(.*)$/;
+
+function splitQuestions(plain){
+  // แยกด้วย "ข้อ <เลขไทย/อารบิก>." รองรับเลขไทยด้วย
+  const norm = plain.replace(/\r/g,'').trim();
+  const parts = norm.split(/(?:^|\n)\s*ข้อ\s*([0-9๐-๙]+)\s*[\.\)]\s*/g);
+  // parts = ["", "1", "เนื้อหา...", "2", "เนื้อหา...", ...]
+  const out = [];
+  for(let i=1;i<parts.length;i+=2){
+    const no = parts[i];
+    const body = parts[i+1] || "";
+    if(body.trim()) out.push({no, body: body.trim()});
+  }
+  return out;
+}
+function thaiDigitToArabic(s){
+  const map = {'๐':'0','๑':'1','๒':'2','๓':'3','๔':'4','๕':'5','๖':'6','๗':'7','๘':'8','๙':'9'};
+  return String(s||"").replace(/[๐-๙]/g,ch=>map[ch]);
+}
+function parseOneBody(body){
+  const lines = body.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(lines.length===0) return null;
+
+  // 1) คำถาม = ตั้งแต่บรรทัดแรกจนก่อนเจอตัวเลือก (บรรทัดที่ขึ้นต้นด้วย ก./ข./ค./ง./จ./ฉ.)
+  const choices = [];
+  let qLines = [];
+  let idx = 0;
+  while(idx < lines.length && !CHOICE_REGEX.test(lines[idx])){
+    qLines.push(lines[idx]); idx++;
+  }
+  const q = qLines.join(" ").replace(/\s+/g,' ').trim();
+
+  // 2) ตัวเลือก (2–6 รายการ) จนก่อน "เฉลย:" หรือ "อธิบาย:" หรือหมด
+  while(idx < lines.length && CHOICE_REGEX.test(lines[idx])){
+    const raw = lines[idx].replace(CHOICE_REGEX,'').trim();
+    choices.push(raw); idx++;
+  }
+
+  // 3) เฉลย / อธิบาย (อาจสลับลำดับกันได้)
+  let correctIndex = 0; // ดีฟอลต์ ก.
+  let explain = "";
+  for(; idx<lines.length; idx++){
+    const L = lines[idx];
+    let m;
+    if((m = L.match(ANSWER_REGEX))){
+      // ดึงตัวอักษรตัวเลือกตัวแรก เช่น "ง. พ.ศ. ๒๕๖๒"
+      const letterMatch = m[1].trim().charAt(0);
+      const pos = TH_CHOICE.indexOf(letterMatch);
+      if(pos>=0) correctIndex = pos;
+    }else if((m = L.match(EXPL_REGEX))){
+      // อธิบาย: เก็บทั้งบรรทัดหลังเครื่องหมาย ":" และรวมบรรทัดถัดไปที่ไม่ใช่ "เฉลย:" / "ข้อ ... "
+      const explLines = [m[1].trim()];
+      // รวมต่อเนื่องถ้าบรรทัดถัดไปไม่ใช่หัวข้อใหม่/เฉลยใหม่
+      while(idx+1<lines.length && !ANSWER_REGEX.test(lines[idx+1])){
+        explLines.push(lines[idx+1].trim());
+        idx++;
+      }
+      explain = explLines.join(" ").replace(/\s+/g,' ').trim();
+    }
+  }
+
+  // กันกรณีตัวเลือกน้อย/ไม่มี
+  const a = (choices.length? choices : ["ตัวเลือกที่ 1","ตัวเลือกที่ 2"]);
+  // กันกรณีเฉลยนอกช่วง
+  if(correctIndex >= a.length) correctIndex = 0;
+
+  return {q, a, c: correctIndex, ex: explain};
+}
+
+function parsePlainToData(plain){
+  const blocks = splitQuestions(plain);
+  const data = [];
+  for(const b of blocks){
+    const item = parseOneBody(b.body);
+    if(item && item.q) data.push(item);
+  }
+  return data;
+}
+
+/* ========= Build quiz HTML ========= */
 function buildQuizHTML(cfg, dataArray){
   const esc = s=>String(s??"").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  // ฝัง data เป็น JSON เพื่อลดปัญหา parse
   const dataJSON = JSON.stringify(dataArray, null, 2);
   const {TITLE,SUBTITLE,LOGO_URL,LINE_OA_ID,SHOP_URL} = cfg;
 
@@ -183,9 +271,9 @@ function buildQuizHTML(cfg, dataArray){
 </div>
 
 <script>
-const LOGO_URL   = ${JSON.stringify(LOGO_URL)};
-const LINE_OA_ID = ${JSON.stringify(LINE_OA_ID)};
-const SHOP_URL   = ${JSON.stringify(SHOP_URL)};
+const LOGO_URL   = ${JSON.stringify(cfg.LOGO_URL)};
+const LINE_OA_ID = ${JSON.stringify(cfg.LINE_OA_ID)};
+const SHOP_URL   = ${JSON.stringify(cfg.SHOP_URL)};
 const data = ${dataJSON};
 
 const q = document.getElementById('q');
@@ -216,8 +304,7 @@ function render(){
   q.textContent = \`ข้อ \${i+1}. \${item.q||""}\`;
   prog.textContent = \`ข้อ \${i+1} / \${data.length}\`;
   (item.a||[]).forEach((t,k)=>{
-    const b=document.createElement('button');
-    b.className='opt'; b.type='button';
+    const b=document.createElement('button'); b.className='opt'; b.type='button';
     b.textContent = \`\${LETTERS[k]||"?"}. \${t}\`;
     b.onclick=()=>choose(k === Number(item.c));
     list.appendChild(b);
@@ -251,52 +338,7 @@ render();
 </html>`;
 }
 
-/* ===== Helper ===== */
-const $ = id => document.getElementById(id);
-const fTitle = $('fTitle'), fSub=$('fSub'), fLogo=$('fLogo'), fLine=$('fLine'), fShop=$('fShop'), fFilename=$('fFilename'), fData=$('fData');
-const okBox=$('ok'), errBox=$('err');
-const btnSample=$('btnSample'), btnValidate=$('btnValidate'), btnGen=$('btnGen'), btnCfg=$('btnCfg');
-const btnImport=$('btnImport'), fileImport=$('fileImport');
-
-function showOK(msg){ okBox.textContent=msg||"พร้อมใช้งาน ✅"; okBox.style.display='block'; errBox.style.display='none'; }
-function showErr(msg){ errBox.textContent=msg||"พบข้อผิดพลาด"; errBox.style.display='block'; okBox.style.display='none'; }
-
-function extractArrayText(txt){
-  if(!txt) return "";
-  const m = txt.match(/\[\s*[\s\S]*\]/); // ดึงเฉพาะ [ ... ]
-  return m ? m[0] : txt;
-}
-function parseData(txt){
-  const s = extractArrayText(txt.trim());
-  try{
-    const arr = JSON.parse(s);
-    if(Array.isArray(arr)) return arr;
-  }catch(e){
-    try{
-      // รองรับ key ไม่ใส่ "" และ 'เดี่ยว'
-      const fixed = s
-        .replace(/(\W)q\s*:/g,'$1"q":')
-        .replace(/(\W)a\s*:/g,'$1"a":')
-        .replace(/(\W)c\s*:/g,'$1"c":')
-        .replace(/(\W)ex\s*:/g,'$1"ex":')
-        .replace(/'/g,'"');
-      const arr2 = JSON.parse(fixed);
-      if(Array.isArray(arr2)) return arr2;
-    }catch(e2){
-      throw new Error("รูปแบบ data ไม่ถูกต้อง (ลองตรวจ JSON อีกครั้ง)");
-    }
-  }
-  throw new Error("ไม่พบอาร์เรย์ data ที่ถูกต้อง");
-}
-function slugify(str){
-  if(!str) return "quiz";
-  // อนุญาตอักษรไทย/อังกฤษ/เลข แปลงช่องว่างเป็นขีด
-  return str.trim()
-    .replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s\-_.]/g,"")
-    .replace(/\s+/g,"-")
-    .replace(/-+/g,"-");
-}
-
+/* ========= Read config, slug, etc. ========= */
 function readCfg(){
   const TITLE = fTitle.value.trim();
   const SUBTITLE = fSub.value.trim();
@@ -307,71 +349,68 @@ function readCfg(){
   if(!SUBTITLE) throw new Error("กรุณาใส่ 'หน่วยงาน'");
   return {TITLE,SUBTITLE,LOGO_URL,LINE_OA_ID,SHOP_URL};
 }
+function slugify(str){
+  if(!str) return "quiz";
+  return str.trim()
+    .replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s\-_.]/g,"")
+    .replace(/\s+/g,"-").replace(/-+/g,"-");
+}
 
-/* ===== Actions ===== */
-btnSample.addEventListener('click',()=>{ fData.value = JSON.stringify(SAMPLE_DATA,null,2); showOK("โหลดตัวอย่างแล้ว"); });
+/* ========= Buttons ========= */
+btnParse.addEventListener('click',()=>{
+  try{
+    const txt = fPlain.value.trim();
+    if(!txt) throw new Error("กรุณาวางข้อความดิบก่อน");
+    const arr = parsePlainToData(txt);
+    if(arr.length===0) throw new Error("แปลงไม่พบข้อสอบ");
+    fData.value = JSON.stringify(arr, null, 2);
+    showOK(`แปลงสำเร็จ ✓ ข้อสอบ ${arr.length} ข้อ`);
+  }catch(e){ showErr(e.message); }
+});
 
 btnValidate.addEventListener('click',()=>{
   try{
-    const cfg = readCfg();
-    const arr = parseData(fData.value);
-    if(arr.length===0) throw new Error("data ว่างเปล่า");
-    showOK(`ผ่านการตรวจสอบ ✓ ข้อสอบ ${arr.length} ข้อ`);
-  }catch(err){ showErr(err.message); }
+    const arr = JSON.parse(fData.value);
+    if(!Array.isArray(arr) || arr.length===0) throw new Error("data ไม่ถูกต้องหรือว่าง");
+    arr.forEach((x,i)=>{
+      if(typeof x.q!=="string") throw new Error(`ข้อ ${i+1}: ไม่มีคำถาม (q)`);
+      if(!Array.isArray(x.a) || x.a.length<2) throw new Error(`ข้อ ${i+1}: ต้องมีตัวเลือกอย่างน้อย 2 ข้อ`);
+      if(typeof x.c!=="number" || x.c<0 || x.c>=x.a.length) throw new Error(`ข้อ ${i+1}: ตำแหน่งคำตอบ (c) ไม่ถูกต้อง`);
+    });
+    showOK(`ตรวจสอบผ่าน ✓ ${arr.length} ข้อ`);
+  }catch(e){ showErr(e.message); }
 });
 
 btnGen.addEventListener('click',()=>{
   try{
     const cfg = readCfg();
-    const arr = parseData(fData.value);
+    const arr = JSON.parse(fData.value);
+    if(!Array.isArray(arr) || arr.length===0) throw new Error("data ว่างเปล่า");
     const html = buildQuizHTML(cfg, arr);
     const name = slugify(fFilename.value.trim() || `${cfg.TITLE}-${cfg.SUBTITLE}`) + ".html";
     const blob = new Blob([html], {type:"text/html;charset=utf-8"});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
     URL.revokeObjectURL(a.href);
     showOK(`สร้างไฟล์สำเร็จ: ${name}`);
-  }catch(err){ showErr(err.message); }
+  }catch(e){ showErr(e.message); }
 });
 
 btnCfg.addEventListener('click',()=>{
   try{
     const cfg = readCfg();
-    const arr = parseData(fData.value);
+    const arr = JSON.parse(fData.value||"[]");
     const out = {config:cfg, data:arr};
     const blob = new Blob([JSON.stringify(out,null,2)], {type:"application/json;charset=utf-8"});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = (slugify(fFilename.value.trim() || `${cfg.TITLE}-${cfg.SUBTITLE}`) + ".config.json");
-    a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = (slugify(fFilename.value.trim() || `${cfg.TITLE}-${cfg.SUBTITLE}`) + ".config.json"); a.click();
     URL.revokeObjectURL(a.href);
     showOK("ดาวน์โหลด config.json แล้ว");
-  }catch(err){ showErr(err.message); }
+  }catch(e){ showErr(e.message); }
 });
 
-btnImport.addEventListener('click',()=>fileImport.click());
-fileImport.addEventListener('change',async (e)=>{
-  const file = e.target.files?.[0];
-  if(!file) return;
-  try{
-    const text = await file.text();
-    // รองรับไฟล์ config.json รูปแบบ {config:{}, data:[...]} หรือวาง data ตรง ๆ
-    try{
-      const obj = JSON.parse(text);
-      if(obj && obj.config && obj.data){
-        const {TITLE,SUBTITLE,LOGO_URL,LINE_OA_ID,SHOP_URL} = obj.config;
-        fTitle.value = TITLE||""; fSub.value = SUBTITLE||"";
-        fLogo.value = LOGO_URL||""; fLine.value = LINE_OA_ID||""; fShop.value = SHOP_URL||"";
-        fData.value = JSON.stringify(obj.data,null,2);
-        showOK("นำเข้า config.json สำเร็จ");
-        return;
-      }
-    }catch(_){} // ถ้าไม่ใช่รูปแบบ config ก็จะลองยัดเป็น data ตรง ๆ
-    fData.value = text;
-    showOK("นำเข้าข้อมูลไฟล์ข้อความเรียบร้อย");
-  }catch(err){ showErr("ไม่สามารถอ่านไฟล์ได้"); }
+btnClear.addEventListener('click',()=>{
+  fPlain.value=""; fData.value="";
+  showOK("ล้างช่องกรอกแล้ว");
 });
 </script>
 </body>
