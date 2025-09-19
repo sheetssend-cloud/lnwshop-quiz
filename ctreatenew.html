@@ -103,99 +103,90 @@ function showOK(msg){ okBox.textContent=msg||"พร้อมใช้งาน 
 function showErr(msg){ errBox.textContent=msg||"พบข้อผิดพลาด"; errBox.style.display='block'; okBox.style.display='none'; }
 
 /* ========= Parsing core =========
-   รับ “ข้อความดิบ” รูปแบบ:
+   รองรับรูปแบบ:
    ข้อ 1. คำถาม...
    ก. ตัวเลือก
    ข. ตัวเลือก
    ค. ตัวเลือก
    ง. ตัวเลือก
-   (รองรับ 2–6 ตัวเลือก, เว้นวรรค/ขึ้นบรรทัดใหม่ได้)
    เฉลย: ง. ...
    อธิบาย: ข้อความ...
 */
-const TH_CHOICE = ["ก","ข","ค","ง","จ","ฉ"]; // เผื่อเกิน 4 ตัวเลือก
+const TH_CHOICE = ["ก","ข","ค","ง","จ","ฉ"]; // รองรับ 2–6 ช้อยส์
 const CHOICE_REGEX = /^[กขคงจฉ]\s*[\.\)]\s*/; // เช่น "ก. " หรือ "ก) "
-const ANSWER_REGEX = /^เฉลย\s*[:：]\s*(.*)$/;   // ดึงทั้งบรรทัด
-const EXPL_REGEX    = /^อธิบาย\s*[:：]\s*(.*)$/;
+const ANSWER_LINE = /^(?:เฉลย)\s*[:：]?\s*(.+)$/; // รองรับ "เฉลย: ง." / "เฉลย ง"
+const EXPL_LINE   = /^(?:อธิบาย)\s*[:：]\s*(.*)$/;
+const NEXT_Q_HEAD = /^ข้อ\s*[0-9๐-๙]+\s*[\.\)]\s*/;
 
 function splitQuestions(plain){
-  // แยกด้วย "ข้อ <เลขไทย/อารบิก>." รองรับเลขไทยด้วย
-  const norm = plain.replace(/\r/g,'').trim();
-  const parts = norm.split(/(?:^|\n)\s*ข้อ\s*([0-9๐-๙]+)\s*[\.\)]\s*/g);
-  // parts = ["", "1", "เนื้อหา...", "2", "เนื้อหา...", ...]
-  const out = [];
-  for(let i=1;i<parts.length;i+=2){
-    const no = parts[i];
-    const body = parts[i+1] || "";
-    if(body.trim()) out.push({no, body: body.trim()});
-  }
-  return out;
+  const norm = (plain||"").replace(/\r/g,'').trim();
+  if(!norm) return [];
+  // แยกด้วย "ข้อ <เลขไทย/อารบิก>."
+  const parts = norm.split(/(?:^|\n)\s*(?=ข้อ\s*[0-9๐-๙]+\s*[\.\)])/g).filter(Boolean);
+  // ตอนนี้แต่ละส่วนเริ่มด้วย "ข้อ ..."
+  return parts.map(txt => txt.replace(/^ข้อ\s*[0-9๐-๙]+\s*[\.\)]\s*/,'').trim()).filter(Boolean);
 }
-function thaiDigitToArabic(s){
-  const map = {'๐':'0','๑':'1','๒':'2','๓':'3','๔':'4','๕':'5','๖':'6','๗':'7','๘':'8','๙':'9'};
-  return String(s||"").replace(/[๐-๙]/g,ch=>map[ch]);
-}
-function parseOneBody(body){
-  const lines = body.split(/\n+/).map(x=>x.trim()).filter(Boolean);
-  if(lines.length===0) return null;
 
-  // 1) คำถาม = ตั้งแต่บรรทัดแรกจนก่อนเจอตัวเลือก (บรรทัดที่ขึ้นต้นด้วย ก./ข./ค./ง./จ./ฉ.)
+function parseOneBlock(block){
+  const lines = block.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(!lines.length) return null;
+
+  // 1) คำถาม: ก่อนพบช้อยส์ตัวแรก
   const choices = [];
-  let qLines = [];
-  let idx = 0;
-  while(idx < lines.length && !CHOICE_REGEX.test(lines[idx])){
-    qLines.push(lines[idx]); idx++;
+  let qLines = [], i = 0;
+  while(i < lines.length && !CHOICE_REGEX.test(lines[i])){
+    // หยุดถ้าพบหัวข้อ "เฉลย"/"อธิบาย" ผิดที่
+    if(ANSWER_LINE.test(lines[i]) || EXPL_LINE.test(lines[i])) break;
+    qLines.push(lines[i]); i++;
   }
   const q = qLines.join(" ").replace(/\s+/g,' ').trim();
 
-  // 2) ตัวเลือก (2–6 รายการ) จนก่อน "เฉลย:" หรือ "อธิบาย:" หรือหมด
-  while(idx < lines.length && CHOICE_REGEX.test(lines[idx])){
-    const raw = lines[idx].replace(CHOICE_REGEX,'').trim();
-    choices.push(raw); idx++;
+  // 2) ตัวเลือก (2–6)
+  while(i < lines.length && CHOICE_REGEX.test(lines[i])){
+    const t = lines[i].replace(CHOICE_REGEX,'').trim();
+    if(t) choices.push(t);
+    i++;
   }
 
-  // 3) เฉลย / อธิบาย (อาจสลับลำดับกันได้)
-  let correctIndex = 0; // ดีฟอลต์ ก.
-  let explain = "";
-  for(; idx<lines.length; idx++){
-    const L = lines[idx];
+  // 3) เฉลย/อธิบาย
+  let c = 0, ex = "";
+  while(i < lines.length){
+    const L = lines[i];
     let m;
-    if((m = L.match(ANSWER_REGEX))){
-      // ดึงตัวอักษรตัวเลือกตัวแรก เช่น "ง. พ.ศ. ๒๕๖๒"
-      const letterMatch = m[1].trim().charAt(0);
-      const pos = TH_CHOICE.indexOf(letterMatch);
-      if(pos>=0) correctIndex = pos;
-    }else if((m = L.match(EXPL_REGEX))){
-      // อธิบาย: เก็บทั้งบรรทัดหลังเครื่องหมาย ":" และรวมบรรทัดถัดไปที่ไม่ใช่ "เฉลย:" / "ข้อ ... "
-      const explLines = [m[1].trim()];
-      // รวมต่อเนื่องถ้าบรรทัดถัดไปไม่ใช่หัวข้อใหม่/เฉลยใหม่
-      while(idx+1<lines.length && !ANSWER_REGEX.test(lines[idx+1])){
-        explLines.push(lines[idx+1].trim());
-        idx++;
+    if((m = L.match(ANSWER_LINE))){
+      // m[1] อาจเป็น "ง. ..." หรือ "ง" เฉย ๆ
+      const first = m[1].trim().charAt(0);
+      const pos = TH_CHOICE.indexOf(first);
+      if(pos >= 0) c = pos;
+    } else if((m = L.match(EXPL_LINE))){
+      const expl = [m[1].trim()];
+      // รวมบรรทัดอธิบายต่อเนื่องจนกว่าจะเจอหัวข้อใหม่หรือ "เฉลย:"
+      while(i+1 < lines.length && !ANSWER_LINE.test(lines[i+1]) && !NEXT_Q_HEAD.test(lines[i+1])){
+        expl.push(lines[++i].trim());
       }
-      explain = explLines.join(" ").replace(/\s+/g,' ').trim();
+      ex = expl.join(" ").replace(/\s+/g,' ').trim();
     }
+    i++;
   }
 
-  // กันกรณีตัวเลือกน้อย/ไม่มี
-  const a = (choices.length? choices : ["ตัวเลือกที่ 1","ตัวเลือกที่ 2"]);
-  // กันกรณีเฉลยนอกช่วง
-  if(correctIndex >= a.length) correctIndex = 0;
+  // กันกรณีตัวเลือกไม่ครบ/ไม่มี
+  const a = choices.length ? choices : ["ตัวเลือกที่ 1","ตัวเลือกที่ 2"];
+  if(c >= a.length) c = 0;
 
-  return {q, a, c: correctIndex, ex: explain};
+  return { q, a, c, ex };
 }
 
 function parsePlainToData(plain){
   const blocks = splitQuestions(plain);
   const data = [];
   for(const b of blocks){
-    const item = parseOneBody(b.body);
+    const item = parseOneBlock(b);
     if(item && item.q) data.push(item);
   }
   return data;
 }
 
-/* ========= Build quiz HTML ========= */
+/* ========= Build quiz HTML (หน้าใช้งานจริง) ========= */
 function buildQuizHTML(cfg, dataArray){
   const esc = s=>String(s??"").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const dataJSON = JSON.stringify(dataArray, null, 2);
@@ -271,9 +262,9 @@ function buildQuizHTML(cfg, dataArray){
 </div>
 
 <script>
-const LOGO_URL   = ${JSON.stringify(cfg.LOGO_URL)};
-const LINE_OA_ID = ${JSON.stringify(cfg.LINE_OA_ID)};
-const SHOP_URL   = ${JSON.stringify(cfg.SHOP_URL)};
+const LOGO_URL   = ${JSON.stringify(LOGO_URL)};
+const LINE_OA_ID = ${JSON.stringify(LINE_OA_ID)};
+const SHOP_URL   = ${JSON.stringify(SHOP_URL)};
 const data = ${dataJSON};
 
 const q = document.getElementById('q');
@@ -293,7 +284,7 @@ const btnShop = document.getElementById('btnShop');
 logo.src = LOGO_URL || "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";
 const lineMsg = "https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url" + location.href;
 btnLine.href = 'https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url' + encodeURIComponent(LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
-btnShop.href = SHOP_URL;
+btnShop.href = SHOP_URL || '#';
 
 let i=0,score=0,locked=false;
 const LETTERS = "กขคงจฉชซฌญฎฏฐฑฒณดตถทธนบปผพฝฟภมยรลวศษสหฬอฮ";
@@ -351,9 +342,7 @@ function readCfg(){
 }
 function slugify(str){
   if(!str) return "quiz";
-  return str.trim()
-    .replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s\-_.]/g,"")
-    .replace(/\s+/g,"-").replace(/-+/g,"-");
+  return str.trim().replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s\-_.]/g,"").replace(/\s+/g,"-").replace(/-+/g,"-");
 }
 
 /* ========= Buttons ========= */
@@ -373,7 +362,7 @@ btnValidate.addEventListener('click',()=>{
     const arr = JSON.parse(fData.value);
     if(!Array.isArray(arr) || arr.length===0) throw new Error("data ไม่ถูกต้องหรือว่าง");
     arr.forEach((x,i)=>{
-      if(typeof x.q!=="string") throw new Error(`ข้อ ${i+1}: ไม่มีคำถาม (q)`);
+      if(typeof x.q!=="string" || !x.q.trim()) throw new Error(`ข้อ ${i+1}: ไม่มีคำถาม (q)`);
       if(!Array.isArray(x.a) || x.a.length<2) throw new Error(`ข้อ ${i+1}: ต้องมีตัวเลือกอย่างน้อย 2 ข้อ`);
       if(typeof x.c!=="number" || x.c<0 || x.c>=x.a.length) throw new Error(`ข้อ ${i+1}: ตำแหน่งคำตอบ (c) ไม่ถูกต้อง`);
     });
