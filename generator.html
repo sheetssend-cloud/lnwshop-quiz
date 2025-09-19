@@ -1,58 +1,209 @@
 <!doctype html>
 <html lang="th">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ตัวสร้างโค้ดกล่องทดลองสอบ | Open Sheets</title>
+<title>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ) — Open Sheets</title>
 <style>
-  body{font-family:"Sarabun",system-ui,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;margin:0;background:#f6f7fb}
-  .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;margin:0;background:#f6f7fb}
+  .wrap{max-width:1120px;margin:24px auto;padding:0 16px}
   h1{margin:8px 0 16px}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   .card{background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.06);padding:16px}
   label{font-weight:700;display:block;margin-bottom:6px}
   input,textarea{width:100%;box-sizing:border-box;border:1px solid #d6d9df;border-radius:8px;padding:10px;font-size:14px}
-  textarea{min-height:240px;font-family:ui-monospace,Consolas,monospace}
+  textarea{min-height:260px;font-family:ui-monospace,Consolas,monospace}
   .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
+  .btn.secondary{background:#6c757d}
+  .btn.success{background:#198754}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .small{font-size:12px;color:#555}
-  pre{white-space:pre-wrap;word-break:break-word}
+  #out{min-height:540px}
 </style>
+</head>
 <body>
 <div class="wrap">
-  <h1>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ) — Open Sheets</h1>
+  <h1>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ)</h1>
   <div class="grid">
     <div class="card">
       <div class="row">
         <div style="flex:1">
-          <label>หัวข้อใหญ่ (แสดงในกล่อง)</label>
-          <input id="title" placeholder="เช่น แบบทดลองสอบ: นักวิชาการพาณิชย์">
+          <label>หัวข้อใหญ่ (Title)</label>
+          <input id="title" placeholder="เช่น แบบทดลองสอบ: นักวิชาการพาณิชย์"
+                 value="แบบทดลองสอบ: นักวิชาการพาณิชย์">
         </div>
         <div style="flex:1">
-          <label>หน่วยงาน/คำอธิบายย่อย</label>
-          <input id="subtitle" placeholder="เช่น กรมเจรจาการค้าระหว่างประเทศ">
+          <label>คำอธิบายย่อย/หน่วยงาน (Subtitle)</label>
+          <input id="subtitle" placeholder="เช่น กรมเจรจาการค้าระหว่างประเทศ"
+                 value="กรมเจรจาการค้าระหว่างประเทศ">
         </div>
       </div>
       <div class="row" style="margin-top:10px">
         <div style="flex:1">
           <label>โลโก้ร้าน (URL รูป .png/.jpg)</label>
-          <input id="logo" placeholder="https://.../logo.png">
+          <input id="logo" placeholder="https://.../logo.png" value="">
         </div>
       </div>
       <div class="row" style="margin-top:10px">
         <div style="flex:1">
           <label>LINE OA ID (เช่น @openshetts)</label>
-          <input id="line" placeholder="@openshetts">
+          <input id="line" placeholder="@openshetts" value="@openshetts">
         </div>
         <div style="flex:1">
-          <label>ลิงก์หน้าร้าน/หน้าสินค้า</label>
-          <input id="shop" placeholder="https://www.yourshop.example">
+          <label>ลิงก์หน้าร้าน/หน้าสินค้า (สำหรับปุ่มสั่งซื้อ)</label>
+          <input id="shop" placeholder="https://www.yourshop.example" value="https://www.yourshop.example">
         </div>
       </div>
       <div style="margin-top:14px">
-        <label>วางแนวข้อสอบ (ฟอร์แมตง่าย)</label>
-        <textarea id="src" placeholder=
-"ตัวอย่างรูปแบบ (10 ข้อ)
-Q1: ข้อใดคือหลักการสำคัญของ WTO ที่ส่งเสริมการแข่งขันเท่าเทียม?
+        <label>วางแนวข้อสอบ (10 ข้อ) — ฟอร์แมตง่าย</label>
+        <textarea id="src" placeholder="ดูตัวอย่างในกล่องนี้"></textarea>
+        <div class="small">ใช้ตัวอักษร ก/ข/ค/ง ระบุคำตอบด้วย ANS: และคำอธิบายด้วย EXP: (รองรับ Q1: หรือ 'ข้อ 1.') ตัวอย่างถูกเติมให้อัตโนมัติด้านล่าง</div>
+      </div>
+      <div style="margin-top:12px" class="row">
+        <button class="btn" onclick="generate()">Generate</button>
+        <button class="btn success" onclick="downloadFile()">Download (quiz.html)</button>
+        <button class="btn secondary" onclick="previewHtml()">Preview</button>
+        <span class="small">* กด Generate ก่อนค่อย Download/Preview</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>ผลลัพธ์ (quiz.html)</label>
+      <textarea id="out"></textarea>
+      <div class="small" style="margin-top:6px">
+        ก็อปทั้งหมดไปวางเป็นไฟล์ <b>quiz.html</b> หรือกด Download ได้เลย → อัปขึ้น GitHub Pages/Netlify แล้วฝัง iFrame ใน LnwShop
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========== QUIZ TEMPLATE (พร้อม Anti-copy + โลโก้ + CTA) ========== */
+const QUIZ_TEMPLATE = `<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>__TITLE__ | Open Sheets</title>
+<style>
+  html,body{margin:0;background:#f0f2f5;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif}
+  #lnwq-box{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--muted:#6c757d;--text:#333;color:var(--text);-webkit-user-select:none;user-select:none}
+  #lnwq-box .lnwq-container{background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);max-width:800px;margin:16px auto;overflow:hidden}
+  #lnwq-box .lnwq-header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:18px 22px;text-align:center;position:relative}
+  #lnwq-box .lnwq-title{margin:0;font-size:1.35rem}
+  #lnwq-box .lnwq-subtitle{margin:.25rem 0 0;opacity:.95}
+  #lnwq-box .lnwq-brand{margin:.35rem 0 0;opacity:.95;font-size:.95rem}
+  #lnwq-box .lnwq-logo{position:absolute;left:14px;top:14px;height:42px;width:auto;border-radius:8px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);padding:4px;object-fit:contain}
+  #lnwq-box .lnwq-body{padding:22px}
+  #lnwq-box .lnwq-qtext{font-weight:700;line-height:1.6;font-size:1.05rem;margin:0 0 16px}
+  #lnwq-box .lnwq-answers{display:grid;gap:10px}
+  #lnwq-box .lnwq-answer{background:#f8f9fa;border:2px solid #ced4da;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;transition:.18s}
+  #lnwq-box .lnwq-answer:hover:not([disabled]){background:#eef2f6;border-color:#0d6efd}
+  #lnwq-box .lnwq-answer.lnwq-correct{background:#d1e7dd;border-color:var(--ok);color:#0f5132;font-weight:700}
+  #lnwq-box .lnwq-answer.lnwq-wrong{background:#f8d7da;border-color:var(--bad);color:#842029}
+  #lnwq-box .lnwq-answer:disabled{opacity:.9;cursor:not-allowed}
+  #lnwq-box .lnwq-explain{background:#f8f9fa;border-left:5px solid #6c757d;padding:12px 14px;margin-top:14px;font-size:.98rem}
+  #lnwq-box .lnwq-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid #eee}
+  #lnwq-box .lnwq-progress{font-weight:600}
+  #lnwq-box .lnwq-btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;transition:.18s;display:inline-block;text-decoration:none}
+  #lnwq-box .lnwq-btn:disabled{background:var(--muted);cursor:not-allowed}
+  #lnwq-box .lnwq-success{background:#28a745}
+  #lnwq-box .lnwq-result-title{font-size:1.6rem;margin:0 0 6px}
+  #lnwq-box .lnwq-score{font-size:2.6rem;font-weight:800;color:var(--p);margin:6px 0 14px}
+  #lnwq-box .lnwq-cta{margin:8px 0 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  #lnwq-box .lnwq-cta-text{margin:0 10px 0 0}
+  #lnwq-box .lnwq-line{background:#06c755}
+  #lnwq-box .lnwq-shop{background:#0d6efd}
+  *{-webkit-touch-callout:none} img{-webkit-user-drag:none;user-drag:none}
+  @media (max-width:480px){#lnwq-box .lnwq-body{padding:16px}#lnwq-box .lnwq-title{font-size:1.15rem}#lnwq-box .lnwq-cta{flex-direction:column;align-items:stretch}}
+</style>
+<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+<div id="lnwq-box" aria-live="polite">
+  <div class="lnwq-container" role="region" aria-label="แบบทดลองสอบ">
+    <div class="lnwq-header">
+      <img class="lnwq-logo" id="lnwq-logo" alt="Logo" src="__LOGO__">
+      <h2 class="lnwq-title">__TITLE__</h2>
+      <p class="lnwq-subtitle">__SUBTITLE__</p>
+      <p class="lnwq-brand">ร้านหนังสือ <b>Open Sheets</b> — จัดจำหน่ายหนังสือแนวข้อสอบ | LINE: <b>__LINEOA__</b></p>
+    </div>
+    <div class="lnwq-body">
+      <div id="lnwq-question-area">
+        <p id="lnwq-question-text" class="lnwq-qtext"></p>
+        <div id="lnwq-answers" class="lnwq-answers" role="group" aria-label="ตัวเลือกคำตอบ"></div>
+        <div id="lnwq-explain" class="lnwq-explain" hidden><strong>คำอธิบาย:</strong> <span id="lnwq-explain-text"></span></div>
+        <div class="lnwq-nav"><span id="lnwq-progress" class="lnwq-progress"></span><button id="lnwq-next" class="lnwq-btn" disabled>ข้อต่อไป</button></div>
+      </div>
+      <div id="lnwq-results" hidden>
+        <h3 class="lnwq-result-title">ผลการทดสอบ</h3>
+        <p>คุณทำได้</p><div id="lnwq-score" class="lnwq-score"></div>
+        <div class="lnwq-cta">
+          <p class="lnwq-cta-text">สนใจสั่งซื้อไฟล์/เล่ม กดปุ่มด้านล่างได้เลย</p>
+          <a id="lnwq-btn-line" class="lnwq-btn lnwq-line" target="_blank" rel="noopener">แชทกับแอดมิน (LINE)</a>
+          <a id="lnwq-btn-shop" class="lnwq-btn lnwq-shop" target="_blank" rel="noopener">สั่งซื้อที่หน้าร้าน</a>
+        </div>
+        <button id="lnwq-restart" class="lnwq-btn lnwq-success">ทำแบบทดสอบใหม่</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const LOGO_URL="__LOGO__";
+const LINE_OA_ID="__LINEOA__";
+const SHOP_URL="__SHOP__";
+const _b64='__B64__';
+(function(){
+  const root=document.getElementById('lnwq-box');
+  const qArea=root.querySelector('#lnwq-question-area');
+  const rs=root.querySelector('#lnwq-results');
+  const qTxt=root.querySelector('#lnwq-question-text');
+  const ans=root.querySelector('#lnwq-answers');
+  const next=root.querySelector('#lnwq-next');
+  const prog=root.querySelector('#lnwq-progress');
+  const scoreEl=root.querySelector('#lnwq-score');
+  const exBox=root.querySelector('#lnwq-explain');
+  const exTxt=root.querySelector('#lnwq-explain-text');
+  const btnLine=root.querySelector('#lnwq-btn-line');
+  const btnShop=root.querySelector('#lnwq-btn-shop');
+  const logoImg=root.querySelector('#lnwq-logo');
+  if(!LOGO_URL){logoImg.style.display='none';} else {logoImg.src=LOGO_URL;}
+  const lineMsg='สวัสดี สนใจสั่งซื้อสินค้านี้ '+(document.referrer||location.href);
+  btnLine.href='https://line.me/R/oaMessage/'+encodeURIComponent(LINE_OA_ID)+'/?'+encodeURIComponent(lineMsg);
+  btnShop.href=SHOP_URL;
+  function d(b){try{return JSON.parse(atob(b.replace(/\\s+/g,'')));}catch(e){return [];}}
+  const quizData=d(_b64);
+  let i=0,score=0,locked=false;
+  function render(){
+    locked=false; next.disabled=true; exBox.hidden=true; ans.innerHTML='';
+    const item=quizData[i]; if(!item){qArea.hidden=true; rs.hidden=false; scoreEl.textContent=score+'/0'; return;}
+    qTxt.textContent='ข้อ '+(i+1)+'. '+item.q;
+    prog.textContent='ข้อ '+(i+1)+' / '+quizData.length;
+    item.a.forEach((opt,idx)=>{
+      const b=document.createElement('button'); b.type='button'; b.className='lnwq-answer';
+      b.textContent=('กขคง'[idx]||'')+'. '+opt.t;
+      b.onclick=()=>choose(b,opt.ok,idx);
+      ans.appendChild(b);
+    });
+  }
+  function choose(btn,isOk){
+    if(locked) return; locked=true;
+    [...ans.children].forEach((b,j)=>{ b.disabled=true; const ok=quizData[i].a[j].ok; b.classList.add(ok?'lnwq-correct':'lnwq-wrong'); });
+    if(isOk) score++;
+    exTxt.textContent=quizData[i].ex||''; exBox.hidden=false;
+    next.textContent=(i===quizData.length-1)?'ดูผลคะแนน':'ข้อต่อไป'; next.disabled=false;
+  }
+  function go(){
+    if(i<quizData.length-1){i++; next.textContent='ข้อต่อไป'; render();}
+    else{ qArea.hidden=true; rs.hidden=false; scoreEl.textContent=score+' / '+quizData.length; }
+  }
+  function restart(){ i=0; score=0; locked=false; qArea.hidden=false; rs.hidden=true; next.textContent='ข้อต่อไป'; render(); }
+  next.addEventListener('click',go);
+  root.querySelector('#lnwq-restart').addEventListener('click',restart);
+  render();
+})();
+</script>
+</body></html>`;
+
+/* ========== ตัวอย่าง 10 ข้อ (จะเติมให้ถ้ากล่องว่าง) ========== */
+const SAMPLE = `Q1: ข้อใดคือหลักการสำคัญของ WTO ที่ส่งเสริมการแข่งขันเท่าเทียม?
 ก) หลักการไม่เลือกปฏิบัติ (Non-Discrimination)
 ข) หลักการค้าเสรี
 ค) หลักการโปร่งใส
@@ -67,96 +218,156 @@ Q2: ความตกลงใดเกี่ยวกับทรัพย์�
 ง) TBT
 ANS: ค
 EXP: TRIPS
-... (จนครบ 10 ข้อ)"></textarea>
-        <div class="small">ใช้ตัวอักษร ก/ข/ค/ง ระบุคำตอบด้วย ANS: และคำอธิบายด้วย EXP:</div>
-      </div>
-      <div style="margin-top:12px" class="row">
-        <button class="btn" onclick="generate()">Generate โค้ด</button>
-        <button class="btn" style="background:#198754" onclick="copyOut()">คัดลอกโค้ด</button>
-      </div>
-    </div>
 
-    <div class="card">
-      <label>ผลลัพธ์ (quiz.html)</label>
-      <textarea id="out" style="min-height:520px"></textarea>
-      <div class="small" style="margin-top:6px">ก็อปทั้งหมดไปวางเป็นไฟล์ <b>quiz.html</b> (หรือชื่ออื่น) แล้วอัปขึ้นโฮสต์ภายนอก จากนั้นฝัง iFrame ใน LnwShop</div>
-    </div>
-  </div>
-</div>
+Q3: ข้อใดไม่ใช่เสาหลักของ AEC?
+ก) ตลาดและฐานการผลิตเดียว
+ข) เสริมขีดความสามารถการแข่งขัน
+ค) รวมตัวเข้ากับเศรษฐกิจโลก
+ง) จัดตั้งกองทุนการเงินอาเซียน
+ANS: ง
+EXP: AEC Blueprint 2025 ไม่มี “กองทุนการเงินอาเซียน”
 
-<script>
-const TEMPLATE = `__QUIZ_HTML__`; // จะถูกแทนด้วยไฟล์จากข้อ 1 อัตโนมัติ (มี _b64 ให้พร้อ ม)
+Q4: กฎว่าด้วยแหล่งกำเนิดสินค้าใน FTA ใช้เพื่อ?
+ก) กำหนดภาษีแน่นอนทุกชนิด
+ข) ยืนยันสัญชาติสินค้าที่ได้สิทธิภาษี
+ค) ควบคุมมาตรฐาน SPS
+ง) จำกัดโควตานำเข้า
+ANS: ข
+EXP: ป้องกันการสวมสิทธิ ต้องพิสูจน์สัญชาติสินค้า
 
-function toQuizArray(txt){
-  const lines = txt.replace(/\\r/g,'').split('\\n');
-  const list=[], lettersMap = {'ก':0,'ข':1,'ค':2,'ง':3};
-  let cur=null, opts=[];
-  function pushCur(){
+Q5: “Single Undertaking” หมายถึง?
+ก) เลือกรับเฉพาะบางความตกลงได้
+ข) ต้องรับทั้งชุดหรือปฏิเสธทั้งชุด
+ค) เจรจาทีละหัวข้อจนจบ
+ง) ประเทศกำลังพัฒนาได้ยกเว้นส่วนใหญ่
+ANS: ข
+EXP: Nothing is agreed until everything is agreed.
+
+Q6: หน่วยงานไทยที่ไต่สวน AD คือ?
+ก) กรมศุลกากร
+ข) กรมเจรจาการค้าระหว่างประเทศ
+ค) กรมการค้าต่างประเทศ
+ง) สคกค.
+ANS: ค
+EXP: DFT ดูแล AD/CVD/Safeguards
+
+Q7: ความต่างสำคัญ RCEP vs CPTPP?
+ก) RCEP มาตรฐานแรงงานสูงกว่า
+ข) RCEP ริเริ่มโดยจีน, CPTPP โดยสหรัฐ
+ค) RCEP มีสมาชิก/ขนาดเศรษฐกิจรวมใหญ่กว่า
+ง) CPTPP เน้นภาษีสินค้า RCEP เน้นบริการ
+ANS: ค
+EXP: RCEP 15 ประเทศ ใหญ่สุดเมื่อวัด GDP+ประชากร
+
+Q8: BATNA คือ?
+ก) ข้อเสนอที่อีกฝ่ายให้ดีที่สุด
+ข) จุดยืนสุดท้าย
+ค) ทางเลือกดีที่สุดเมื่อเจรจาล้มเหลว
+ง) ข้อตกลงเบื้องต้นร่วมกัน
+ANS: ค
+EXP: BATNA ที่ดีเพิ่มอำนาจต่อรอง
+
+Q9: EU CBAM ระยะแรกกระทบสินค้ากลุ่ม?
+ก) เกษตรและอาหารแปรรูป
+ข) เหล็ก เหล็กกล้า อะลูมิเนียม ปุ๋ย
+ค) อิเล็กทรอนิกส์และยานยนต์
+ง) สิ่งทอ
+ANS: ข
+EXP: กลุ่มเข้มคาร์บอนสูง
+
+Q10: National Single Window ของไทยคือ?
+ก) พอร์ทัล BOI ต่างชาติ
+ข) จุดเดียวเชื่อมข้อมูลนำเข้า-ส่งออก/โลจิสติกส์
+ค) คลังข้อมูลกฎหมายการค้าทั้งหมด
+ง) แพลตฟอร์มเจรจาการค้า
+ANS: ข
+EXP: อำนวยความสะดวกการค้า ลดซ้ำซ้อนเอกสาร`;
+
+/* ========== Parser & Generator ========== */
+function parseSource(txt){
+  if(!txt.trim()){ txt = SAMPLE; document.getElementById('src').value = SAMPLE; }
+  const lines = txt.replace(/\r/g,'').split('\n');
+  const list = [];
+  const letters = {'ก':0,'ข':1,'ค':2,'ง':3};
+  let cur=null, opts=['','','',''], expBuf=[];
+  function push(){
     if(!cur) return;
-    if(opts.length!==4) throw new Error("แต่ละข้อ ต้องมีช้อยส์ครบ 4 ตัว (ก ข ค ง)");
-    if(cur.ans==null) throw new Error("ระบุ ANS: (คำตอบ) ให้ครบทุกข้อ");
-    list.push({
-      q:cur.q.trim(),
-      a:opts.map((t,i)=>({t, ok:i===cur.ans})),
-      ex:(cur.exp||"").trim()
-    });
-    cur=null; opts=[];
+    if(opts.filter(Boolean).length!==4) throw new Error('แต่ละข้อ ต้องมีช้อยส์ครบ 4 ตัว (ก ข ค ง)');
+    if(cur.ans==null) throw new Error('ระบุ ANS: (คำตอบ) ให้ครบทุกข้อ');
+    cur.ex = expBuf.join(' ').trim();
+    list.push({q:cur.q.trim(), a:opts.map((t,i)=>({t,ok:i===cur.ans})), ex:cur.ex});
+    cur=null; opts=['','','','']; expBuf=[];
   }
-  for(let i=0;i<lines.length;i++){
-    const L=lines[i].trim();
-    if(!L) continue;
-    const qm = L.match(/^Q\\s*\\d*[:：]\\s*(.+)$/i);
-    if(qm){ pushCur(); cur={q:qm[1], ans:null, exp:""}; continue; }
-    const om = L.match(/^([กขคง])[\\)\\.|\\:]\\s*(.+)$/);
-    if(om){ const idx = lettersMap[om[1]]; opts[idx]=om[2]; continue; }
-    const am = L.match(/^ANS[:：]\\s*([กขคง])$/i);
-    if(am){ if(!cur) throw new Error("พบ ANS: ก่อน Q:"); cur.ans=lettersMap[am[1]]; continue; }
-    const em = L.match(/^EXP[:：]\\s*(.+)$/i);
-    if(em){ if(!cur) throw new Error("พบ EXP: ก่อน Q:"); cur.exp=em[1]; continue; }
+  for(let raw of lines){
+    const L = raw.trim(); if(!L) continue;
+    const q1 = L.match(/^(?:Q\s*\d*|ข้อ\s*\d+)[\.\:\-：]\s*(.+)$/i);
+    if(q1){ push(); cur={q:q1[1],ans:null,ex:''}; continue; }
+    const om = L.match(/^([กขคง])[)\.\:\-]\s*(.+)$/);
+    if(om){ const idx=letters[om[1]]; opts[idx]=om[2]; continue; }
+    const am = L.match(/^ANS[\:\-：]\s*([กขคง1234])$/i);
+    if(am){
+      if(!cur) throw new Error('พบ ANS: ก่อน Q:');
+      const v=am[1];
+      cur.ans = /[1234]/.test(v) ? (parseInt(v,10)-1) : letters[v];
+      continue;
+    }
+    const em = L.match(/^EXP[\:\-：]\s*(.*)$/i);
+    if(em){ if(!cur) throw new Error('พบ EXP: ก่อน Q:'); expBuf.push(em[1]); continue; }
+    // บรรทัดอื่น ๆ ต่อท้ายคำอธิบาย
+    if(cur && (cur.ans!=null)) expBuf.push(L);
   }
-  pushCur();
-  if(list.length!==10) throw new Error("ต้องมี 10 ข้อพอดี (ตอนนี้ได้ "+list.length+")");
+  push();
+  if(list.length!==10) throw new Error(`ต้องมี 10 ข้อพอดี (ตอนนี้ได้ ${list.length})`);
   return list;
 }
 function b64(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
+
 function generate(){
   try{
-    const title = document.getElementById('title').value||"แบบทดลองสอบ";
-    const subtitle = document.getElementById('subtitle').value||"";
-    const logo = document.getElementById('logo').value||"";
-    const line = document.getElementById('line').value||"@openshetts";
-    const shop = document.getElementById('shop').value||"https://www.yourshopurl.example";
-    const arr = toQuizArray(document.getElementById('src').value);
+    const title = document.getElementById('title').value || 'แบบทดลองสอบ';
+    const subtitle = document.getElementById('subtitle').value || '';
+    const logo = document.getElementById('logo').value || '';
+    const line = document.getElementById('line').value || '@openshetts';
+    const shop = document.getElementById('shop').value || 'https://www.yourshop.example';
+    const arr = parseSource(document.getElementById('src').value);
+    const data64 = b64(arr);
 
-    // ใส่ Base64 quizData ลงในเทมเพลต
-    let html = TEMPLATE;
-
-    // แทนค่าคอนฟิก
-    html = html.replace(/const LOGO_URL\\s*=\\s*"[^"]*"/, 'const LOGO_URL="'+logo.replace(/"/g,'\\"')+'"');
-    html = html.replace(/const LINE_OA_ID\\s*=\\s*"[^"]*"/, 'const LINE_OA_ID="'+line.replace(/"/g,'\\"')+'"');
-    html = html.replace(/const SHOP_URL\\s*=\\s*"[^"]*"/,   'const SHOP_URL="'+shop.replace(/"/g,'\\"')+'"');
-
-    // แทนชื่อหัวข้อ/ซับไตเติลใน DOM (มองหาข้อความเดิมแล้วแทน)
-    html = html.replace(/<h2 class="lnwq-title">[^<]+<\\/h2>/, '<h2 class="lnwq-title">'+title.replace(/</g,'&lt;')+'</h2>');
-    html = html.replace(/<p class="lnwq-subtitle">[^<]*<\\/p>/, '<p class="lnwq-subtitle">'+subtitle.replace(/</g,'&lt;')+'</p>');
-
-    // แทน Base64 data
-    html = html.replace(/const _b64\\s*=\\s*`[\\s\\S]*?`;/, 'const _b64=`'+b64(arr)+'`;');
+    let html = QUIZ_TEMPLATE
+      .replaceAll('__TITLE__', escapeHtml(title))
+      .replaceAll('__SUBTITLE__', escapeHtml(subtitle))
+      .replaceAll('__LOGO__', logo)
+      .replaceAll('__LINEOA__', line)
+      .replaceAll('__SHOP__', shop)
+      .replace('__B64__', data64);
 
     document.getElementById('out').value = html;
   }catch(e){
-    alert("เกิดข้อผิดพลาด: "+e.message);
+    alert('เกิดข้อผิดพลาด: ' + e.message);
   }
 }
-function copyOut(){
-  const t=document.getElementById('out');
-  t.select(); t.setSelectionRange(0, 999999);
-  document.execCommand('copy');
-  alert('คัดลอกโค้ดเรียบร้อย');
+
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function downloadFile(){
+  const txt = document.getElementById('out').value;
+  if(!txt.trim()){ alert('กรุณากด Generate ก่อน'); return; }
+  const blob = new Blob([txt], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'quiz.html';
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
-/* ฝังเทมเพลตของข้อ 1 ลงในตัวแปร TEMPLATE แบบอัตโนมัติ:
-   กรุณาแทน __QUIZ_HTML__ ด้วยโค้ดไฟล์ quiz.html จากส่วนที่ 1 ทั้งก้อนก่อนใช้งานจริง */
+function previewHtml(){
+  const txt = document.getElementById('out').value;
+  if(!txt.trim()){ alert('กรุณากด Generate ก่อน'); return; }
+  const blob = new Blob([txt], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
+/* เติมตัวอย่างให้อัตโนมัติครั้งแรก */
+document.getElementById('src').value = SAMPLE;
 </script>
 </body>
 </html>
