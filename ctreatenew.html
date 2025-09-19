@@ -3,19 +3,131 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ทดลองสอบ | ร้านหนังสือ Open Sheets</title>
+<title>ตัวตั้งค่า & ตัวสร้างไฟล์ HTML | Open Sheets</title>
 <style>
-  :root{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--muted:#6c757d;--text:#333}
+  :root{--p:#005c97;--p2:#363795}
   *{box-sizing:border-box}
   html,body{margin:0}
-  body{font-family:"Sarabun",system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;background:#f0f2f5;user-select:none;-webkit-user-select:none}
+  body{font-family:"Sarabun",system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;background:#f3f4f6;color:#222}
+  .wrap{max-width:980px;margin:24px auto;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.08);overflow:hidden}
+  header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:16px 20px}
+  header h2{margin:0 0 4px 0;font-weight:800}
+  .body{padding:18px 20px;display:grid;gap:16px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .row{display:grid;grid-template-columns:220px 1fr;gap:10px;align-items:center}
+  .row input,.row textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;font-family:inherit}
+  .row textarea{min-height:220px}
+  .muted{color:#6b7280;font-size:.92rem}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
+  .btn.sec{background:#6c757d}
+  .btn.ghost{background:#eef2f6;color:#0d6efd}
+  .note{background:#f8fafc;border:1px dashed #cbd5e1;padding:12px;border-radius:12px}
+  code.k{background:#f6f7f8;border:1px solid #e5e7eb;border-radius:6px;padding:.1rem .35rem}
+  .ok{color:#0f5132;background:#d1e7dd;border:1px solid #badbcc;padding:8px 10px;border-radius:10px;display:none}
+  .err{color:#842029;background:#f8d7da;border:1px solid #f5c2c7;padding:8px 10px;border-radius:10px;display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h2>ตัวตั้งค่า & ตัวสร้างไฟล์ HTML (แยกจากหน้าทดสอบ)</h2>
+    <div class="muted">กรอกข้อมูล → วาง <code class="k">data</code> → กด “สร้างไฟล์ HTML” เพื่อดาวน์โหลดไฟล์ทดสอบสำหรับอัปขึ้นเว็บ</div>
+  </header>
+
+  <div class="body">
+    <div class="grid">
+      <div class="row">
+        <label>ชื่อตำแหน่ง</label>
+        <input id="fTitle" placeholder="เช่น ตำแหน่ง นักวิชาการพาณิชย์">
+      </div>
+      <div class="row">
+        <label>หน่วยงาน</label>
+        <input id="fSub" placeholder="เช่น กรมเจรจาการค้าระหว่างประเทศ">
+      </div>
+      <div class="row">
+        <label>โลโก้ร้าน (URL)</label>
+        <input id="fLogo" placeholder="https://.../logo.png">
+      </div>
+      <div class="row">
+        <label>LINE OA (เช่น @openshetts)</label>
+        <input id="fLine" placeholder="@yourline">
+      </div>
+      <div class="row">
+        <label>ลิงก์หน้าร้าน/สินค้า</label>
+        <input id="fShop" placeholder="https://www.opensheetsstore.com/....">
+      </div>
+      <div class="row">
+        <label>ชื่อไฟล์ (ไม่ต้องใส่ .html)</label>
+        <input id="fFilename" placeholder="เช่น นักวิชาการพาณิชย์-กรมเจรจาฯ">
+      </div>
+      <div class="row" style="grid-column:1/-1">
+        <label>ข้อมูลข้อสอบ <span class="muted">(วางได้ทั้ง <code class="k">const data=[...]</code> หรือแค่อาร์เรย์)</span></label>
+        <textarea id="fData" placeholder='ตัวอย่าง:
+[
+  {"q":"คำถาม 1?","a":["ก","ข","ค","ง"],"c":0,"ex":"อธิบาย"},
+  {"q":"คำถาม 2?","a":["ก","ข","ค","ง"],"c":2}
+]'></textarea>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button id="btnSample" class="btn ghost">โหลดตัวอย่าง data</button>
+      <button id="btnValidate" class="btn sec">ตรวจสอบรูปแบบ</button>
+      <button id="btnGen" class="btn">สร้างไฟล์ HTML</button>
+      <button id="btnCfg" class="btn ghost">ดาวน์โหลด config.json</button>
+      <input type="file" id="fileImport" accept=".json,.txt" hidden>
+      <button id="btnImport" class="btn ghost">นำเข้าจากไฟล์</button>
+    </div>
+
+    <div id="ok" class="ok">พร้อมใช้งาน ✅</div>
+    <div id="err" class="err">พบข้อผิดพลาด</div>
+
+    <div class="note">
+      เคล็ดลัด: วางทั้งก้อนที่คัดลอกจากโค้ดเดิมแบบ <code class="k">const data = [ ... ]</code> ก็ได้ ระบบจะดึงเฉพาะอาร์เรย์ให้เอง
+      <br>ไม่บังคับครบ 10 ข้อ / จำนวนตัวเลือก 2–6 ก็ได้ / <code class="k">ex</code> จะมีหรือไม่มีก็ได้
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== ตัวอย่าง data (เปลี่ยนได้) ===== */
+const SAMPLE_DATA = [
+  {q:"ข้อใดคือหลักการที่สำคัญที่สุดขององค์การการค้าโลก (WTO) ที่ส่งเสริมการแข่งขันอย่างเป็นธรรม?",
+   a:["หลักการไม่เลือกปฏิบัติ (Non-Discrimination)","หลักการค้าเสรี (Free Trade)","หลักการโปร่งใส (Transparency)","มาตรการปกป้อง (Safeguard)"], c:0, ex:"รวม MFN + National Treatment ให้แข่งขันเท่าเทียม"},
+  {q:"ความตกลงใดของ WTO เกี่ยวกับทรัพย์สินทางปัญญา?", a:["GATT","GATS","TRIPS","TBT"], c:2, ex:"TRIPS = Trade-Related Aspects of IPR"},
+  {q:"ข้อใดไม่ใช่เสาหลักของ AEC Blueprint?", a:["ตลาดและฐานการผลิตเดียว","เพิ่มขีดความสามารถการแข่งขัน","รวมกับเศรษฐกิจโลก","กองทุนการเงินอาเซียน"], c:3, ex:"AEC 2025 มี 4 เสา ไม่รวมกองทุน"},
+  {q:"กฎว่าด้วยแหล่งกำเนิดสินค้า (Rules of Origin) สำคัญเพราะ?", a:["กำหนดภาษีแน่นอนทุกชนิด","ยืนยันว่าสินค้าที่ได้สิทธิเป็นของภาคีจริง","ควบคุม SPS","จำกัดโควตา"], c:1, ex:"กันสวมสิทธิ ต้องพิสูจน์สัญชาติสินค้า"},
+  {q:'"Single Undertaking" หมายถึง?', a:["รับบางข้อตกลงได้","ต้องรับทั้งชุดหรือปฏิเสธทั้งชุด","เจรจาทีละหัวข้อ","พัฒนาได้ยกเว้นส่วนใหญ่"], c:1, ex:'“Nothing is agreed until everything is agreed.”'},
+  {q:"หน่วยงานไทยที่ไต่สวน Anti-Dumping?", a:["กรมศุลกากร","กรมเจรจาการค้าระหว่างประเทศ","กรมการค้าต่างประเทศ","สคก.การแข่งขันทางการค้า"], c:2, ex:"DFT ดูแล AD/CVD/Safeguards"},
+  {q:"ความต่างเด่น RCEP vs CPTPP?", a:["RCEP มาตรฐานแรงงานสูงกว่า","RCEP ริเริ่มโดยจีน, CPTPP โดยสหรัฐ","RCEP มีสมาชิก/ขนาดเศรษฐกิจรวมใหญ่กว่า","CPTPP เน้นสินค้า RCEP เน้นบริการ"], c:2, ex:"RCEP 15 ประเทศ ใหญ่สุดเมื่อวัด GDP+ประชากร"},
+  {q:"BATNA คือ?", a:["ข้อเสนอที่อีกฝ่ายดีที่สุด","จุดยืนสุดท้าย","ทางเลือกดีที่สุดถ้าเจรจาล้มเหลว","ข้อตกลงเบื้องต้น"], c:2, ex:"BATNA แข็งแรง = อำนาจต่อรองสูง"},
+  {q:"CBAM ระยะแรก EU กระทบสินค้ากลุ่มใดมาก?", a:["เกษตร/อาหาร","เหล็ก อะลูมิเนียม ปุ๋ย (ฯลฯ)","อิเล็กทรอนิกส์/ยานยนต์","สิ่งทอ"], c:1, ex:"กลุ่มปล่อยคาร์บอนสูง เช่น เหล็ก ปุ๋ย ซีเมนต์"},
+  {q:"National Single Window (NSW) ของไทยคือ?", a:["พอร์ทัล BOI","ศูนย์กลางข้อมูลนำเข้า-ส่งออก/โลจิสติกส์จุดเดียว","คลังกฎหมายการค้า","แพลตฟอร์มเจรจาการค้ารัฐ"], c:1, ex:"ลดซ้ำซ้อน เอกสารผ่านช่องทางเดียว"}
+];
+
+/* ===== โครงหน้าแบบทดสอบที่ฝังลงในไฟล์ปลายทาง ===== */
+function buildQuizHTML(cfg, dataArray){
+  const esc = s=>String(s??"").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  // ฝัง data เป็น JSON เพื่อลดปัญหา parse
+  const dataJSON = JSON.stringify(dataArray, null, 2);
+  const {TITLE,SUBTITLE,LOGO_URL,LINE_OA_ID,SHOP_URL} = cfg;
+
+  return `<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(TITLE)} | ร้านหนังสือ Open Sheets</title>
+<style>
+  :root{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--muted:#6c757d;--text:#333}
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:"Sarabun",system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;background:#f0f2f5}
   .wrap{max-width:800px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);overflow:hidden}
-  .header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:16px 20px;text-align:center;position:relative}
+  .header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:16px 20px;text-align:center}
   .brand{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
   .logo{height:42px;width:auto;object-fit:contain;border-radius:8px;background:#fff10;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
-  h2{margin:4px 0 0}
-  .sub{margin:4px 0 0;opacity:.95}
-  .copyright{margin:8px 0 0;font-size:.95rem;opacity:.95}
+  h2{margin:4px 0 0}.sub{margin:4px 0 0;opacity:.95}.copyright{margin:8px 0 0;font-size:.95rem;opacity:.95}
   .body{padding:20px}
   .q{font-weight:700;line-height:1.6;margin-bottom:12px}
   .answers{display:grid;gap:10px}
@@ -31,37 +143,19 @@
   .result{text-align:center;display:none}
   .success{background:#28a745}
   .cta{margin:8px 0 16px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .btn-line{background:#06c755}
-  .btn-shop{background:#0d6efd}
+  .btn-line{background:#06c755}.btn-shop{background:#0d6efd}
   img,svg{pointer-events:none}
-
-  /* ===== แผงตั้งค่า (Template Panel) ===== */
-  .toolbar{position:fixed;right:16px;bottom:16px;z-index:99;display:flex;gap:8px;flex-direction:column}
-  .fab{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:22px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-  .panel{position:fixed;inset:auto 0 0 auto;right:16px;bottom:84px;width:min(560px,calc(100% - 32px));max-height:75vh;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden;display:none}
-  .panel header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:12px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
-  .panel .content{padding:14px;display:grid;gap:12px}
-  .grid{display:grid;grid-template-columns:1fr;gap:10px}
-  .row{display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:center}
-  .row input,.row textarea{width:100%;padding:10px;border:1px solid #ced4da;border-radius:10px;font-family:inherit}
-  .row textarea{min-height:140px}
-  .hlp{font-size:.9rem;color:#666;margin:-4px 0 0}
-  .panel footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 14px;border-top:1px solid #eee}
-  .btn-sec{background:#6c757d}
-  .btn-ghost{background:#eef2f6;color:#0d6efd}
-  .note{font-size:.92rem;color:#444}
-  code.k{background:#f6f7f8;border:1px solid #e5e7eb;border-radius:6px;padding:.1rem .35rem}
 </style>
 </head>
-<body oncontextmenu="return false">
+<body>
 <div class="wrap">
   <div class="header">
     <div class="brand">
       <img id="logo" class="logo" alt="Open Sheets Logo">
       <div>
-        <h2 id="title">แบบทดลองสอบ: ตำแหน่ง นักวิชาการพาณิชย์</h2>
-        <div class="sub" id="subtitle">กรมเจรจาการค้าระหว่างประเทศ</div>
-        <div class="copyright">ร้านหนังสือ <b>Open Sheets</b> — จัดจำหน่ายหนังสือแนวข้อสอบ | LINE: <b id="lineid">@openshetts</b></div>
+        <h2>${esc(TITLE)}</h2>
+        <div class="sub">${esc(SUBTITLE)}</div>
+        <div class="copyright">ร้านหนังสือ <b>Open Sheets</b> — จัดจำหน่ายหนังสือแนวข้อสอบ | LINE: <b>${esc(LINE_OA_ID)}</b></div>
       </div>
     </div>
   </div>
@@ -88,97 +182,12 @@
   </div>
 </div>
 
-<!-- ===== Toolbar & Template Panel ===== -->
-<div class="toolbar">
-  <button id="openPanel" class="btn fab" title="ตั้งค่า">⚙️</button>
-  <button id="restart2" class="btn fab success" title="เริ่มใหม่">🔄</button>
-</div>
-
-<div class="panel" id="tpl">
-  <header>
-    <span>ตั้งค่าแบบเร็ว (รูปแบบสำเร็จรูป)</span>
-    <button id="closePanel" class="btn btn-ghost">ปิด</button>
-  </header>
-  <div class="content">
-    <div class="grid">
-      <div class="row">
-        <label>โลโก้ร้าน</label>
-        <input id="fLogo" placeholder="URL รูปโลโก้ (.png/.jpg)" />
-      </div>
-      <div class="row">
-        <label>ชื่อตำแหน่ง</label>
-        <input id="fTitle" placeholder="เช่น ตำแหน่ง นักวิชาการพาณิชย์" />
-      </div>
-      <div class="row">
-        <label>หน่วยงาน</label>
-        <input id="fSub" placeholder="เช่น กรมเจรจาการค้าระหว่างประเทศ" />
-      </div>
-      <div class="row">
-        <label>LINE OA</label>
-        <input id="fLine" placeholder="@yourline" />
-      </div>
-      <div class="row">
-        <label>ลิงก์หน้าร้าน</label>
-        <input id="fShop" placeholder="https://...." />
-      </div>
-      <div class="row">
-        <label>ข้อมูลข้อสอบ</label>
-        <textarea id="fData" placeholder='วางค่า JavaScript ของตัวแปร data ได้เลย เช่น:
-[
-  { "q":"คำถาม 1?", "a":["ตัวเลือก ก","ข","ค","ง"], "c":0, "ex":"อธิบาย" },
-  { "q":"คำถาม 2?", "a":["ก","ข","ค","ง"], "c":2 }
-]'></textarea>
-      </div>
-      <div class="note">
-        เคล็ดลัด: วาง <code class="k">const data = [ ... ]</code> ทั้งก้อนก็ได้ ระบบจะดึงเฉพาะอาร์เรย์ให้เอง ✔ ไม่ต้องครบ 10 ข้อ ✔ จะมี 2–5 ตัวเลือกก็ได้
-      </div>
-      <div class="hlp">Tips: กด “โหลดตัวอย่าง” เพื่อลองทันที แล้วแก้บรรทัดในแผงนี้ทีหลัง</div>
-    </div>
-  </div>
-  <footer>
-    <input type="file" id="fileImport" accept=".json,.txt" hidden />
-    <button id="btnSample" class="btn btn-ghost">โหลดตัวอย่าง</button>
-    <button id="btnImport" class="btn btn-ghost">นำเข้าจากไฟล์</button>
-    <button id="btnSave" class="btn">บันทึก & เริ่ม</button>
-  </footer>
-</div>
-
 <script>
-/* ===== ค่าตั้งต้น ===== */
-const DEFAULTS = {
-  LOGO_URL   : "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg",
-  LINE_OA_ID : "@openshetts",
-  SHOP_URL   : "https://www.opensheetsstore.com/product/376/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%AD%E0%B8%9A-%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A3%E0%B8%B2%E0%B8%8A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%8F%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B8%81-%E0%B8%9E-%E0%B8%A3-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95%E0%B8%A5%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%9B%E0%B8%B5-2568-%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B2",
-  TITLE      : "แบบทดลองสอบ: ตำแหน่ง นักวิชาการพาณิชย์",
-  SUBTITLE   : "กรมเจรจาการค้าระหว่างประเทศ"
-};
+const LOGO_URL   = ${JSON.stringify(LOGO_URL)};
+const LINE_OA_ID = ${JSON.stringify(LINE_OA_ID)};
+const SHOP_URL   = ${JSON.stringify(SHOP_URL)};
+const data = ${dataJSON};
 
-/* ====== ตัวอย่าง data (วางแบบเดิมได้เลย) ====== */
-const SAMPLE_DATA = [
-  {q:"ข้อใดคือหลักการที่สำคัญที่สุดขององค์การการค้าโลก (WTO) ที่ส่งเสริมการแข่งขันอย่างเป็นธรรม?",
-   a:["หลักการไม่เลือกปฏิบัติ (Non-Discrimination)","หลักการค้าเสรี (Free Trade)","หลักการโปร่งใส (Transparency)","มาตรการปกป้อง (Safeguard)"],
-   c:0, ex:"รวม MFN + National Treatment ให้แข่งขันเท่าเทียม"},
-  {q:"ความตกลงใดของ WTO เกี่ยวกับทรัพย์สินทางปัญญา?",
-   a:["GATT","GATS","TRIPS","TBT"], c:2, ex:"TRIPS = Trade-Related Aspects of IPR"},
-  {q:"ข้อใดไม่ใช่เสาหลักของ AEC Blueprint?",
-   a:["ตลาดและฐานการผลิตเดียว","เพิ่มขีดความสามารถการแข่งขัน","รวมกับเศรษฐกิจโลก","กองทุนการเงินอาเซียน"], c:3, ex:"AEC 2025 มี 4 เสา ไม่รวมกองทุน"},
-  {q:"กฎว่าด้วยแหล่งกำเนิดสินค้า (Rules of Origin) สำคัญเพราะ?",
-   a:["กำหนดภาษีแน่นอนทุกชนิด","ยืนยันว่าสินค้าที่ได้สิทธิเป็นของภาคีจริง","ควบคุม SPS","จำกัดโควตา"], c:1, ex:"กันสวมสิทธิ ต้องพิสูจน์สัญชาติสินค้า"},
-  {q:'"Single Undertaking" หมายถึง?',
-   a:["รับบางข้อตกลงได้","ต้องรับทั้งชุดหรือปฏิเสธทั้งชุด","เจรจาทีละหัวข้อ","พัฒนาได้ยกเว้นส่วนใหญ่"], c:1, ex:'“Nothing is agreed until everything is agreed.”'},
-  {q:"หน่วยงานไทยที่ไต่สวน Anti-Dumping?",
-   a:["กรมศุลกากร","กรมเจรจาการค้าระหว่างประเทศ","กรมการค้าต่างประเทศ","สคก.การแข่งขันทางการค้า"], c:2, ex:"DFT ดูแล AD/CVD/Safeguards"},
-  {q:"ความต่างเด่น RCEP vs CPTPP?",
-   a:["RCEP มาตรฐานแรงงานสูงกว่า","RCEP ริเริ่มโดยจีน, CPTPP โดยสหรัฐ","RCEP มีสมาชิก/ขนาดเศรษฐกิจรวมใหญ่กว่า","CPTPP เน้นสินค้า RCEP เน้นบริการ"], c:2, ex:"RCEP 15 ประเทศ ใหญ่สุดเมื่อวัด GDP+ประชากร"},
-  {q:"BATNA คือ?",
-   a:["ข้อเสนอที่อีกฝ่ายดีที่สุด","จุดยืนสุดท้าย","ทางเลือกดีที่สุดถ้าเจรจาล้มเหลว","ข้อตกลงเบื้องต้น"], c:2, ex:"BATNA แข็งแรง = อำนาจต่อรองสูง"},
-  {q:"CBAM ระยะแรก EU กระทบสินค้ากลุ่มใดมาก?",
-   a:["เกษตร/อาหาร","เหล็ก อะลูมิเนียม ปุ๋ย (ฯลฯ)","อิเล็กทรอนิกส์/ยานยนต์","สิ่งทอ"], c:1, ex:"กลุ่มปล่อยคาร์บอนสูง เช่น เหล็ก ปุ๋ย ซีเมนต์"},
-  {q:"National Single Window (NSW) ของไทยคือ?",
-   a:["พอร์ทัล BOI","ศูนย์กลางข้อมูลนำเข้า-ส่งออก/โลจิสติกส์จุดเดียว","คลังกฎหมายการค้า","แพลตฟอร์มเจรจาการค้ารัฐ"], c:1, ex:"ลดซ้ำซ้อน เอกสารผ่านช่องทางเดียว"}
-];
-
-/* ===== อ้างอิง DOM ===== */
 const q = document.getElementById('q');
 const list = document.getElementById('answers');
 const ex = document.getElementById('ex');
@@ -192,82 +201,30 @@ const restart = document.getElementById('restart');
 const logo = document.getElementById('logo');
 const btnLine = document.getElementById('btnLine');
 const btnShop = document.getElementById('btnShop');
-const titleEl = document.getElementById('title');
-const subEl = document.getElementById('subtitle');
-const lineIdEl = document.getElementById('lineid');
 
-/* Panel elements */
-const tpl = document.getElementById('tpl');
-const openPanel = document.getElementById('openPanel');
-const closePanel = document.getElementById('closePanel');
-const restart2 = document.getElementById('restart2');
-const fLogo = document.getElementById('fLogo');
-const fTitle = document.getElementById('fTitle');
-const fSub = document.getElementById('fSub');
-const fLine = document.getElementById('fLine');
-const fShop = document.getElementById('fShop');
-const fData = document.getElementById('fData');
-const btnSave = document.getElementById('btnSave');
-const btnSample = document.getElementById('btnSample');
-const btnImport = document.getElementById('btnImport');
-const fileImport = document.getElementById('fileImport');
+logo.src = LOGO_URL || "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";
+const lineMsg = "https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url" + location.href;
+btnLine.href = 'https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url' + encodeURIComponent(LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
+btnShop.href = SHOP_URL;
 
-/* ===== สถานะ ===== */
 let i=0,score=0,locked=false;
-let data = [...SAMPLE_DATA]; // เริ่มด้วยตัวอย่าง
+const LETTERS = "กขคงจฉชซฌญฎฏฐฑฒณดตถทธนบปผพฝฟภมยรลวศษสหฬอฮ";
 
-/* ===== Utils ===== */
-const LETTERS = "กขคงจฉชซฌญฎฏฐฑฒณดตถทธนบปผพฝฟภมยรลวศษสหฬอฮ"; // รองรับช้อยส์ยาว ๆ
-function safeParseData(txt){
-  if(!txt||!txt.trim()) return null;
-  // รับได้ทั้ง "const data = [ ... ]" หรือแค่อาร์เรย์
-  let s = txt.trim();
-  // ตัดส่วน "const data ="
-  const m = s.match(/\[\s*[\s\S]*\]/);
-  if(m) s = m[0];
-  try{
-    const arr = JSON.parse(s);
-    if(Array.isArray(arr)) return arr;
-  }catch(e){
-    // พยายาม parse JSON แบบ keys ไม่ใส่เครื่องหมายคำพูด (กรณีคัดมาจาก JS ข้างนอก)
-    try{
-      const fixed = s
-        .replace(/(\W)q\s*:/g,'$1"q":')
-        .replace(/(\W)a\s*:/g,'$1"a":')
-        .replace(/(\W)c\s*:/g,'$1"c":')
-        .replace(/(\W)ex\s*:/g,'$1"ex":')
-        .replace(/'/g,'"');
-      const arr2 = JSON.parse(fixed);
-      if(Array.isArray(arr2)) return arr2;
-    }catch(e2){
-      alert("อ่านข้อมูลข้อสอบไม่สำเร็จ\n\nตรวจรูปแบบ JSON อีกครั้ง");
-    }
-  }
-  return null;
-}
-function saveToLocal(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} }
-function loadFromLocal(k,def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch{return def;} }
-
-/* ===== เรนเดอร์ข้อสอบ ===== */
 function render(){
   locked=false; next.disabled=true; ex.style.display="none"; list.innerHTML="";
   const item = data[i];
-  q.textContent = `ข้อ ${i+1}. ${item.q || ""}`;
-  prog.textContent = `ข้อ ${i+1} / ${data.length}`;
+  q.textContent = \`ข้อ \${i+1}. \${item.q||""}\`;
+  prog.textContent = \`ข้อ \${i+1} / \${data.length}\`;
   (item.a||[]).forEach((t,k)=>{
     const b=document.createElement('button');
     b.className='opt'; b.type='button';
-    const label = (LETTERS[k]||"?");
-    b.textContent = `${label}. ${t}`;
+    b.textContent = \`\${LETTERS[k]||"?"}. \${t}\`;
     b.onclick=()=>choose(k === Number(item.c));
     list.appendChild(b);
   });
-  // เผื่อกรณีไม่มีตัวเลือก (จะขึ้นข้อความเตือนเบา ๆ)
   if(!item.a || item.a.length===0){
-    const n=document.createElement('div');
-    n.style.color="#b02a37"; n.style.fontWeight="700";
-    n.textContent="* ข้อนี้ยังไม่มีตัวเลือก";
-    list.appendChild(n);
+    const n=document.createElement('div'); n.style.color="#b02a37"; n.style.fontWeight="700";
+    n.textContent="* ข้อนี้ยังไม่มีตัวเลือก"; list.appendChild(n);
   }
 }
 function choose(ok){
@@ -283,99 +240,139 @@ function choose(ok){
   next.textContent = (i===data.length-1) ? "ดูผลคะแนน" : "ข้อต่อไป";
   next.disabled=false;
 }
-function goNext(){
-  if(i < data.length-1){ i++; render(); }
-  else{
-    panel.style.display='none';
-    result.style.display='block';
-    scoreEl.textContent=`${score} / ${data.length}`;
-  }
-}
+function goNext(){ if(i < data.length-1){ i++; render(); } else { panel.style.display='none'; result.style.display='block'; scoreEl.textContent=\`\${score} / \${data.length}\`; } }
 function reset(){ i=0; score=0; panel.style.display='block'; result.style.display='none'; render(); }
 
-/* ===== ลิงก์และหัวกระดาษ ===== */
-function applyHeader(cfg){
-  logo.src = cfg.LOGO_URL || DEFAULTS.LOGO_URL;
-  titleEl.textContent = cfg.TITLE || DEFAULTS.TITLE;
-  subEl.textContent = cfg.SUBTITLE || DEFAULTS.SUBTITLE;
-  lineIdEl.textContent = cfg.LINE_OA_ID || DEFAULTS.LINE_OA_ID;
-  const lineMsg = "https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url" + location.href;
-  btnLine.href = 'https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url' + encodeURIComponent(cfg.LINE_OA_ID || DEFAULTS.LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
-  btnShop.href = cfg.SHOP_URL || DEFAULTS.SHOP_URL;
-}
-const storedCfg = loadFromLocal("opensheets_quiz_cfg", DEFAULTS);
-applyHeader(storedCfg);
-
-/* ===== ปุ่ม/เหตุการณ์หลัก ===== */
 next.addEventListener('click',goNext);
 restart.addEventListener('click',reset);
-
-/* ป้องกันก๊อปง่าย ๆ */
-document.addEventListener('keydown',function(e){
-  const k=(e.ctrlKey||e.metaKey) && ['s','S','u','U','p','P','c','C'].includes(e.key);
-  const fkeys=[123]; // F12
-  if(k || fkeys.includes(e.keyCode)){ e.preventDefault(); e.stopPropagation(); }
-},true);
-document.addEventListener('dragstart',e=>e.preventDefault());
-document.addEventListener('copy',e=>e.preventDefault());
-
-/* ===== แผงตั้งค่า ===== */
-function openTpl(){
-  fLogo.value = storedCfg.LOGO_URL || DEFAULTS.LOGO_URL;
-  fTitle.value = storedCfg.TITLE || DEFAULTS.TITLE;
-  fSub.value = storedCfg.SUBTITLE || DEFAULTS.SUBTITLE;
-  fLine.value = storedCfg.LINE_OA_ID || DEFAULTS.LINE_OA_ID;
-  fShop.value = storedCfg.SHOP_URL || DEFAULTS.SHOP_URL;
-  fData.value = "";
-  tpl.style.display='block';
+render();
+</script>
+</body>
+</html>`;
 }
-function closeTpl(){ tpl.style.display='none'; }
 
-openPanel.addEventListener('click',openTpl);
-closePanel.addEventListener('click',closeTpl);
-restart2.addEventListener('click',reset);
+/* ===== Helper ===== */
+const $ = id => document.getElementById(id);
+const fTitle = $('fTitle'), fSub=$('fSub'), fLogo=$('fLogo'), fLine=$('fLine'), fShop=$('fShop'), fFilename=$('fFilename'), fData=$('fData');
+const okBox=$('ok'), errBox=$('err');
+const btnSample=$('btnSample'), btnValidate=$('btnValidate'), btnGen=$('btnGen'), btnCfg=$('btnCfg');
+const btnImport=$('btnImport'), fileImport=$('fileImport');
 
-btnSample.addEventListener('click',()=>{
-  fData.value = JSON.stringify(SAMPLE_DATA, null, 2);
+function showOK(msg){ okBox.textContent=msg||"พร้อมใช้งาน ✅"; okBox.style.display='block'; errBox.style.display='none'; }
+function showErr(msg){ errBox.textContent=msg||"พบข้อผิดพลาด"; errBox.style.display='block'; okBox.style.display='none'; }
+
+function extractArrayText(txt){
+  if(!txt) return "";
+  const m = txt.match(/\[\s*[\s\S]*\]/); // ดึงเฉพาะ [ ... ]
+  return m ? m[0] : txt;
+}
+function parseData(txt){
+  const s = extractArrayText(txt.trim());
+  try{
+    const arr = JSON.parse(s);
+    if(Array.isArray(arr)) return arr;
+  }catch(e){
+    try{
+      // รองรับ key ไม่ใส่ "" และ 'เดี่ยว'
+      const fixed = s
+        .replace(/(\W)q\s*:/g,'$1"q":')
+        .replace(/(\W)a\s*:/g,'$1"a":')
+        .replace(/(\W)c\s*:/g,'$1"c":')
+        .replace(/(\W)ex\s*:/g,'$1"ex":')
+        .replace(/'/g,'"');
+      const arr2 = JSON.parse(fixed);
+      if(Array.isArray(arr2)) return arr2;
+    }catch(e2){
+      throw new Error("รูปแบบ data ไม่ถูกต้อง (ลองตรวจ JSON อีกครั้ง)");
+    }
+  }
+  throw new Error("ไม่พบอาร์เรย์ data ที่ถูกต้อง");
+}
+function slugify(str){
+  if(!str) return "quiz";
+  // อนุญาตอักษรไทย/อังกฤษ/เลข แปลงช่องว่างเป็นขีด
+  return str.trim()
+    .replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s\-_.]/g,"")
+    .replace(/\s+/g,"-")
+    .replace(/-+/g,"-");
+}
+
+function readCfg(){
+  const TITLE = fTitle.value.trim();
+  const SUBTITLE = fSub.value.trim();
+  const LOGO_URL = fLogo.value.trim() || "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";
+  const LINE_OA_ID = fLine.value.trim() || "@openshetts";
+  const SHOP_URL = fShop.value.trim() || "";
+  if(!TITLE) throw new Error("กรุณาใส่ 'ชื่อตำแหน่ง'");
+  if(!SUBTITLE) throw new Error("กรุณาใส่ 'หน่วยงาน'");
+  return {TITLE,SUBTITLE,LOGO_URL,LINE_OA_ID,SHOP_URL};
+}
+
+/* ===== Actions ===== */
+btnSample.addEventListener('click',()=>{ fData.value = JSON.stringify(SAMPLE_DATA,null,2); showOK("โหลดตัวอย่างแล้ว"); });
+
+btnValidate.addEventListener('click',()=>{
+  try{
+    const cfg = readCfg();
+    const arr = parseData(fData.value);
+    if(arr.length===0) throw new Error("data ว่างเปล่า");
+    showOK(`ผ่านการตรวจสอบ ✓ ข้อสอบ ${arr.length} ข้อ`);
+  }catch(err){ showErr(err.message); }
 });
+
+btnGen.addEventListener('click',()=>{
+  try{
+    const cfg = readCfg();
+    const arr = parseData(fData.value);
+    const html = buildQuizHTML(cfg, arr);
+    const name = slugify(fFilename.value.trim() || `${cfg.TITLE}-${cfg.SUBTITLE}`) + ".html";
+    const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showOK(`สร้างไฟล์สำเร็จ: ${name}`);
+  }catch(err){ showErr(err.message); }
+});
+
+btnCfg.addEventListener('click',()=>{
+  try{
+    const cfg = readCfg();
+    const arr = parseData(fData.value);
+    const out = {config:cfg, data:arr};
+    const blob = new Blob([JSON.stringify(out,null,2)], {type:"application/json;charset=utf-8"});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (slugify(fFilename.value.trim() || `${cfg.TITLE}-${cfg.SUBTITLE}`) + ".config.json");
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showOK("ดาวน์โหลด config.json แล้ว");
+  }catch(err){ showErr(err.message); }
+});
+
 btnImport.addEventListener('click',()=>fileImport.click());
 fileImport.addEventListener('change',async (e)=>{
   const file = e.target.files?.[0];
   if(!file) return;
-  const text = await file.text();
-  fData.value = text;
+  try{
+    const text = await file.text();
+    // รองรับไฟล์ config.json รูปแบบ {config:{}, data:[...]} หรือวาง data ตรง ๆ
+    try{
+      const obj = JSON.parse(text);
+      if(obj && obj.config && obj.data){
+        const {TITLE,SUBTITLE,LOGO_URL,LINE_OA_ID,SHOP_URL} = obj.config;
+        fTitle.value = TITLE||""; fSub.value = SUBTITLE||"";
+        fLogo.value = LOGO_URL||""; fLine.value = LINE_OA_ID||""; fShop.value = SHOP_URL||"";
+        fData.value = JSON.stringify(obj.data,null,2);
+        showOK("นำเข้า config.json สำเร็จ");
+        return;
+      }
+    }catch(_){} // ถ้าไม่ใช่รูปแบบ config ก็จะลองยัดเป็น data ตรง ๆ
+    fData.value = text;
+    showOK("นำเข้าข้อมูลไฟล์ข้อความเรียบร้อย");
+  }catch(err){ showErr("ไม่สามารถอ่านไฟล์ได้"); }
 });
-
-btnSave.addEventListener('click',()=>{
-  // 1) บันทึกหัวกระดาษ
-  const cfg = {
-    LOGO_URL   : fLogo.value.trim() || DEFAULTS.LOGO_URL,
-    TITLE      : fTitle.value.trim() || DEFAULTS.TITLE,
-    SUBTITLE   : fSub.value.trim() || DEFAULTS.SUBTITLE,
-    LINE_OA_ID : fLine.value.trim() || DEFAULTS.LINE_OA_ID,
-    SHOP_URL   : fShop.value.trim() || DEFAULTS.SHOP_URL
-  };
-  applyHeader(cfg);
-  saveToLocal("opensheets_quiz_cfg", cfg);
-
-  // 2) ถ้ามีวางข้อมูลข้อสอบ => แทนที่ทั้งชุด
-  const parsed = safeParseData(fData.value);
-  if(parsed && Array.isArray(parsed) && parsed.length){
-    data = parsed.map(x=>({
-      q: x.q ?? "",
-      a: Array.isArray(x.a) ? x.a : [],
-      c: typeof x.c==="number" ? x.c : 0,
-      ex: x.ex ?? ""
-    }));
-  }
-
-  // 3) เริ่มทำข้อสอบใหม่
-  closeTpl();
-  reset();
-});
-
-/* ===== เริ่มทำงาน ===== */
-reset();
 </script>
 </body>
 </html>
