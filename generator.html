@@ -3,39 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ) — Open Sheets</title>
+<title>ตัวสร้างโค้ดกล่องทดลองสอบ | Open Sheets</title>
 <style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;margin:0;background:#f6f7fb}
-  .wrap{max-width:1120px;margin:24px auto;padding:0 16px}
+  body{font-family:"Sarabun",system-ui,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;margin:0;background:#f6f7fb}
+  .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
   h1{margin:8px 0 16px}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   .card{background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.06);padding:16px}
   label{font-weight:700;display:block;margin-bottom:6px}
   input,textarea{width:100%;box-sizing:border-box;border:1px solid #d6d9df;border-radius:8px;padding:10px;font-size:14px}
-  textarea{min-height:260px;font-family:ui-monospace,Consolas,monospace}
+  textarea{min-height:240px;font-family:ui-monospace,Consolas,monospace}
   .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
-  .btn.secondary{background:#6c757d}
   .btn.success{background:#198754}
+  .btn.gray{background:#6c757d}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .small{font-size:12px;color:#555}
-  #out{min-height:540px}
+  #out{min-height:520px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ)</h1>
+  <h1>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ) — Open Sheets</h1>
   <div class="grid">
     <div class="card">
       <div class="row">
         <div style="flex:1">
-          <label>หัวข้อใหญ่ (Title)</label>
-          <input id="title" placeholder="เช่น แบบทดลองสอบ: นักวิชาการพาณิชย์"
-                 value="แบบทดลองสอบ: นักวิชาการพาณิชย์">
+          <label>หัวข้อใหญ่ (แสดงในกล่อง)</label>
+          <input id="title" placeholder="เช่น แบบทดลองสอบ: นักวิชาการพาณิชย์" value="แบบทดลองสอบ: นักวิชาการพาณิชย์">
         </div>
         <div style="flex:1">
-          <label>คำอธิบายย่อย/หน่วยงาน (Subtitle)</label>
-          <input id="subtitle" placeholder="เช่น กรมเจรจาการค้าระหว่างประเทศ"
-                 value="กรมเจรจาการค้าระหว่างประเทศ">
+          <label>หน่วยงาน/คำอธิบายย่อย</label>
+          <input id="subtitle" placeholder="เช่น กรมเจรจาการค้าระหว่างประเทศ" value="กรมเจรจาการค้าระหว่างประเทศ">
         </div>
       </div>
       <div class="row" style="margin-top:10px">
@@ -50,42 +48,39 @@
           <input id="line" placeholder="@openshetts" value="@openshetts">
         </div>
         <div style="flex:1">
-          <label>ลิงก์หน้าร้าน/หน้าสินค้า (สำหรับปุ่มสั่งซื้อ)</label>
+          <label>ลิงก์หน้าร้าน/หน้าสินค้า</label>
           <input id="shop" placeholder="https://www.yourshop.example" value="https://www.yourshop.example">
         </div>
       </div>
       <div style="margin-top:14px">
-        <label>วางแนวข้อสอบ (10 ข้อ) — ฟอร์แมตง่าย</label>
-        <textarea id="src" placeholder="ดูตัวอย่างในกล่องนี้"></textarea>
-        <div class="small">ใช้ตัวอักษร ก/ข/ค/ง ระบุคำตอบด้วย ANS: และคำอธิบายด้วย EXP: (รองรับ Q1: หรือ 'ข้อ 1.') ตัวอย่างถูกเติมให้อัตโนมัติด้านล่าง</div>
+        <label>วางแนวข้อสอบ (ฟอร์แมตง่าย)</label>
+        <textarea id="src" placeholder="ดูตัวอย่างด้านล่าง"></textarea>
+        <div class="small">ใช้ตัวอักษร ก/ข/ค/ง • ระบุคำตอบด้วย <b>ANS:</b> • คำอธิบายด้วย <b>EXP:</b> • รองรับ <code>Q1:</code> หรือ <code>ข้อ 1.</code></div>
       </div>
       <div style="margin-top:12px" class="row">
-        <button class="btn" onclick="generate()">Generate</button>
-        <button class="btn success" onclick="downloadFile()">Download (quiz.html)</button>
-        <button class="btn secondary" onclick="previewHtml()">Preview</button>
-        <span class="small">* กด Generate ก่อนค่อย Download/Preview</span>
+        <button class="btn" onclick="generate()">Generate โค้ด</button>
+        <button class="btn success" onclick="downloadOut()">ดาวน์โหลดไฟล์ (quiz.html)</button>
+        <button class="btn gray" onclick="previewOut()">แสดงตัวอย่าง</button>
       </div>
     </div>
 
     <div class="card">
       <label>ผลลัพธ์ (quiz.html)</label>
       <textarea id="out"></textarea>
-      <div class="small" style="margin-top:6px">
-        ก็อปทั้งหมดไปวางเป็นไฟล์ <b>quiz.html</b> หรือกด Download ได้เลย → อัปขึ้น GitHub Pages/Netlify แล้วฝัง iFrame ใน LnwShop
-      </div>
+      <div class="small" style="margin-top:6px">คัดลอกทั้งหมดไปวางเป็นไฟล์ <b>quiz.html</b> หรือใช้ปุ่มดาวน์โหลด — จากนั้นอัปขึ้น GitHub Pages/Netlify แล้วฝัง iFrame ใน LnwShop</div>
     </div>
   </div>
 </div>
 
 <script>
-/* ========== QUIZ TEMPLATE (พร้อม Anti-copy + โลโก้ + CTA) ========== */
-const QUIZ_TEMPLATE = `<!doctype html>
+/* ================== TEMPLATE: quiz.html (ฝังมาครบ) ================== */
+const TEMPLATE = `<!doctype html>
 <html lang="th">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>__TITLE__ | Open Sheets</title>
 <style>
-  html,body{margin:0;background:#f0f2f5;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif}
+  html,body{margin:0;background:#f0f2f5;font-family:"Sarabun",system-ui,Segoe UI,Roboto,"Noto Sans Thai",sans-serif}
   #lnwq-box{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--muted:#6c757d;--text:#333;color:var(--text);-webkit-user-select:none;user-select:none}
   #lnwq-box .lnwq-container{background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);max-width:800px;margin:16px auto;overflow:hidden}
   #lnwq-box .lnwq-header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:18px 22px;text-align:center;position:relative}
@@ -202,7 +197,7 @@ const _b64='__B64__';
 </script>
 </body></html>`;
 
-/* ========== ตัวอย่าง 10 ข้อ (จะเติมให้ถ้ากล่องว่าง) ========== */
+/* ================== ตัวอย่าง 10 ข้อ (จะเติมให้อัตโนมัติ) ================== */
 const SAMPLE = `Q1: ข้อใดคือหลักการสำคัญของ WTO ที่ส่งเสริมการแข่งขันเท่าเทียม?
 ก) หลักการไม่เลือกปฏิบัติ (Non-Discrimination)
 ข) หลักการค้าเสรี
@@ -283,7 +278,7 @@ Q10: National Single Window ของไทยคือ?
 ANS: ข
 EXP: อำนวยความสะดวกการค้า ลดซ้ำซ้อนเอกสาร`;
 
-/* ========== Parser & Generator ========== */
+/* ================== Parser + Generator ================== */
 function parseSource(txt){
   if(!txt.trim()){ txt = SAMPLE; document.getElementById('src').value = SAMPLE; }
   const lines = txt.replace(/\r/g,'').split('\n');
@@ -300,20 +295,19 @@ function parseSource(txt){
   }
   for(let raw of lines){
     const L = raw.trim(); if(!L) continue;
-    const q1 = L.match(/^(?:Q\s*\d*|ข้อ\s*\d+)[\.\:\-：]\s*(.+)$/i);
-    if(q1){ push(); cur={q:q1[1],ans:null,ex:''}; continue; }
+    const qm = L.match(/^(?:Q\s*\d*|ข้อ\s*\d+)[\.\:\-：]\s*(.+)$/i);
+    if(qm){ push(); cur={q:qm[1],ans:null,ex:''}; continue; }
     const om = L.match(/^([กขคง])[)\.\:\-]\s*(.+)$/);
-    if(om){ const idx=letters[om[1]]; opts[idx]=om[2]; continue; }
+    if(om){ const idx={'ก':0,'ข':1,'ค':2,'ง':3}[om[1]]; opts[idx]=om[2]; continue; }
     const am = L.match(/^ANS[\:\-：]\s*([กขคง1234])$/i);
     if(am){
       if(!cur) throw new Error('พบ ANS: ก่อน Q:');
-      const v=am[1];
-      cur.ans = /[1234]/.test(v) ? (parseInt(v,10)-1) : letters[v];
+      const v=am[1]; cur.ans = /[1234]/.test(v) ? (parseInt(v,10)-1) : letters[v];
       continue;
     }
     const em = L.match(/^EXP[\:\-：]\s*(.*)$/i);
     if(em){ if(!cur) throw new Error('พบ EXP: ก่อน Q:'); expBuf.push(em[1]); continue; }
-    // บรรทัดอื่น ๆ ต่อท้ายคำอธิบาย
+    // บรรทัดอื่น ๆ หลังจากมี ANS แล้ว ถือว่าเป็นส่วนของคำอธิบายต่อเนื่อง
     if(cur && (cur.ans!=null)) expBuf.push(L);
   }
   push();
@@ -321,6 +315,7 @@ function parseSource(txt){
   return list;
 }
 function b64(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function generate(){
   try{
@@ -332,7 +327,7 @@ function generate(){
     const arr = parseSource(document.getElementById('src').value);
     const data64 = b64(arr);
 
-    let html = QUIZ_TEMPLATE
+    let html = TEMPLATE
       .replaceAll('__TITLE__', escapeHtml(title))
       .replaceAll('__SUBTITLE__', escapeHtml(subtitle))
       .replaceAll('__LOGO__', logo)
@@ -341,26 +336,27 @@ function generate(){
       .replace('__B64__', data64);
 
     document.getElementById('out').value = html;
+    alert('สร้างโค้ดสำเร็จ ✓  คุณสามารถกดแสดงตัวอย่างหรือดาวน์โหลดได้ทันที');
   }catch(e){
     alert('เกิดข้อผิดพลาด: ' + e.message);
   }
 }
 
-function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function downloadFile(){
+function downloadOut(){
   const txt = document.getElementById('out').value;
-  if(!txt.trim()){ alert('กรุณากด Generate ก่อน'); return; }
+  if(!txt.trim()){ alert('กรุณากด Generate โค้ดก่อน'); return; }
   const blob = new Blob([txt], {type:'text/html;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'quiz.html';
-  document.body.appendChild(a); a.click(); a.remove();
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
 
-function previewHtml(){
+function previewOut(){
   const txt = document.getElementById('out').value;
-  if(!txt.trim()){ alert('กรุณากด Generate ก่อน'); return; }
+  if(!txt.trim()){ alert('กรุณากด Generate โค้ดก่อน'); return; }
   const blob = new Blob([txt], {type:'text/html;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   window.open(url, '_blank');
