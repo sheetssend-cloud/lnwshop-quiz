@@ -1,234 +1,174 @@
-<!-- LnwShop: กล่องทดลองสอบก่อนซื้อ + แบรนด์ + CTA -->
-<div id="lnwq-box" aria-live="polite">
-  <div class="lnwq-container" role="region" aria-label="แบบทดลองสอบ">
-    <div class="lnwq-header">
-      <h2 class="lnwq-title">แบบทดลองสอบ: นักวิชาการพาณิชย์</h2>
-      <p class="lnwq-subtitle">กรมเจรจาการค้าระหว่างประเทศ</p>
-      <!-- แสดงลิขสิทธิ์/เครดิตร้าน -->
-      <p class="lnwq-brand">
-        ร้านหนังสือ <b>Open Sheets</b> — จัดจำหน่ายหนังสือแนวข้อสอบ |
-        LINE: <b>@openshetts</b>
-      </p>
-    </div>
-
-    <div class="lnwq-body">
-      <div id="lnwq-question-area" class="lnwq-card lnwq-active">
-        <p id="lnwq-question-text" class="lnwq-qtext">1. คำถามจะแสดงที่นี่</p>
-        <div id="lnwq-answers" class="lnwq-answers" role="group" aria-label="ตัวเลือกคำตอบ"></div>
-
-        <div id="lnwq-explain" class="lnwq-explain" hidden>
-          <strong>คำอธิบาย:</strong> <span id="lnwq-explain-text"></span>
-        </div>
-
-        <div class="lnwq-nav">
-          <span id="lnwq-progress" class="lnwq-progress">ข้อ 1 / 10</span>
-          <button id="lnwq-next" class="lnwq-btn" disabled>ข้อต่อไป</button>
-        </div>
-      </div>
-
-      <div id="lnwq-results" class="lnwq-card" hidden>
-        <h3 class="lnwq-result-title">ผลการทดสอบ</h3>
-        <p>คุณทำได้</p>
-        <div id="lnwq-score" class="lnwq-score">0 / 10</div>
-
-        <!-- CTA ปลายทาง -->
-        <div class="lnwq-cta">
-          <p class="lnwq-cta-text">หากสนใจสั่งซื้อไฟล์/เล่ม กดปุ่มด้านล่างได้เลย</p>
-          <a id="lnwq-btn-line" class="lnwq-btn lnwq-line" target="_blank" rel="noopener">แชทกับแอดมิน (LINE)</a>
-          <a id="lnwq-btn-shop" class="lnwq-btn lnwq-shop" target="_blank" rel="noopener">สั่งซื้อที่หน้าร้าน</a>
-        </div>
-
-        <button id="lnwq-restart" class="lnwq-btn lnwq-success">ทำแบบทดสอบใหม่</button>
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แบบทดลองสอบ | Open Sheets</title>
+<style>
+  :root{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--muted:#6c757d;--text:#333}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:"Sarabun",system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;background:#f0f2f5;user-select:none;-webkit-user-select:none}
+  .wrap{max-width:800px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);overflow:hidden}
+  .header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:16px 20px;text-align:center;position:relative}
+  .brand{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .logo{height:42px;width:auto;object-fit:contain;border-radius:8px;background:#fff10;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+  h2{margin:4px 0 0}
+  .sub{margin:4px 0 0;opacity:.95}
+  .copyright{margin:8px 0 0;font-size:.95rem;opacity:.95}
+  .body{padding:20px}
+  .q{font-weight:700;line-height:1.6;margin-bottom:12px}
+  .answers{display:grid;gap:10px}
+  .opt{background:#f8f9fa;border:2px solid #ced4da;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;transition:.18s}
+  .opt:hover{background:#eef2f6;border-color:#0d6efd}
+  .opt.correct{background:#d1e7dd;border-color:var(--ok);color:#0f5132;font-weight:700}
+  .opt.wrong{background:#f8d7da;border-color:var(--bad);color:#842029}
+  .ex{background:#f8f9fa;border-left:5px solid #6c757d;padding:12px 14px;margin-top:14px;display:none}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid #eee}
+  .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn[disabled]{background:var(--muted);cursor:not-allowed}
+  .score{font-size:2.4rem;font-weight:800;color:var(--p);margin:6px 0 14px}
+  .result{text-align:center;display:none}
+  .success{background:#28a745}
+  .cta{margin:8px 0 16px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .btn-line{background:#06c755}
+  .btn-shop{background:#0d6efd}
+  /* กันลากภาพ/เลือกข้อความ */
+  img,svg{pointer-events:none}
+</style>
+</head>
+<body oncontextmenu="return false">
+<div class="wrap">
+  <div class="header">
+    <div class="brand">
+      <!-- ใส่โลโก้ร้านตรงนี้ -->
+      <img id="logo" class="logo" alt="Open Sheets Logo">
+      <div>
+        <h2>แบบทดลองสอบ: นักวิชาการพาณิชย์</h2>
+        <div class="sub">กรมเจรจาการค้าระหว่างประเทศ</div>
+        <div class="copyright">ร้านหนังสือ <b>Open Sheets</b> — จัดจำหน่ายหนังสือแนวข้อสอบ | LINE: <b>@openshetts</b></div>
       </div>
     </div>
   </div>
+
+  <div class="body" id="panel">
+    <div id="q" class="q">ข้อ 1. …</div>
+    <div id="answers" class="answers"></div>
+    <div id="ex" class="ex"><b>คำอธิบาย:</b> <span id="ex-text"></span></div>
+    <div class="nav">
+      <span id="progress">ข้อ 1 / 10</span>
+      <button id="next" class="btn" disabled>ข้อต่อไป</button>
+    </div>
+  </div>
+
+  <div class="body result" id="result">
+    <h3>ผลการทดสอบ</h3>
+    <div class="score" id="score">0 / 10</div>
+    <p>หากสนใจสั่งซื้อไฟล์/เล่ม กดปุ่มด้านล่างได้เลย</p>
+    <div class="cta">
+      <a id="btnLine" class="btn btn-line" target="_blank" rel="noopener">แชทกับแอดมิน (LINE)</a>
+      <a id="btnShop" class="btn btn-shop" target="_blank" rel="noopener">สั่งซื้อที่หน้าร้าน</a>
+    </div>
+    <button id="restart" class="btn success">ทำแบบทดสอบใหม่</button>
+  </div>
 </div>
 
-<style>
-  /* ===== Scoped styles (prefix lnwq-) ===== */
-  #lnwq-box{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--muted:#6c757d;--text:#333}
-  #lnwq-box{font-family:"Sarabun",system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans Thai",sans-serif;color:var(--text)}
-  #lnwq-box .lnwq-container{background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);max-width:800px;margin:16px auto;overflow:hidden}
-  #lnwq-box .lnwq-header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:18px 22px;text-align:center}
-  #lnwq-box .lnwq-title{margin:0;font-size:1.35rem}
-  #lnwq-box .lnwq-subtitle{margin:.25rem 0 0;opacity:.95}
-  #lnwq-box .lnwq-brand{margin:.35rem 0 0;opacity:.95;font-size:.95rem}
-  #lnwq-box .lnwq-body{padding:22px}
-  #lnwq-box .lnwq-card{display:block}
-  #lnwq-box .lnwq-qtext{font-weight:700;line-height:1.6;font-size:1.05rem;margin:0 0 16px}
-  #lnwq-box .lnwq-answers{display:grid;gap:10px}
-  #lnwq-box .lnwq-answer{background:#f8f9fa;border:2px solid #ced4da;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;transition:.18s}
-  #lnwq-box .lnwq-answer:hover:not([disabled]){background:#eef2f6;border-color:#0d6efd}
-  #lnwq-box .lnwq-answer[aria-pressed="true"]{background:#cfe2ff;border-color:#0d6efd;font-weight:600}
-  #lnwq-box .lnwq-answer.lnwq-correct{background:#d1e7dd;border-color:var(--ok);color:#0f5132;font-weight:700}
-  #lnwq-box .lnwq-answer.lnwq-wrong{background:#f8d7da;border-color:var(--bad);color:#842029}
-  #lnwq-box .lnwq-answer:disabled{opacity:.9;cursor:not-allowed}
-  #lnwq-box .lnwq-explain{background:#f8f9fa;border-left:5px solid #6c757d;padding:12px 14px;margin-top:14px;font-size:.98rem}
-  #lnwq-box .lnwq-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid #eee}
-  #lnwq-box .lnwq-progress{font-weight:600}
-  #lnwq-box .lnwq-btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;transition:.18s;display:inline-block;text-decoration:none}
-  #lnwq-box .lnwq-btn:hover:not([disabled]){filter:brightness(.95)}
-  #lnwq-box .lnwq-btn:disabled{background:var(--muted);cursor:not-allowed}
-  #lnwq-box .lnwq-success{background:#28a745}
-  #lnwq-box .lnwq-result-title{font-size:1.6rem;margin:0 0 6px}
-  #lnwq-box .lnwq-score{font-size:2.6rem;font-weight:800;color:var(--p);margin:6px 0 14px}
-  #lnwq-box .lnwq-cta{margin:8px 0 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  #lnwq-box .lnwq-cta-text{margin:0 10px 0 0}
-  #lnwq-box .lnwq-line{background:#06c755}
-  #lnwq-box .lnwq-shop{background:#0d6efd}
-  @media (max-width:480px){
-    #lnwq-box .lnwq-body{padding:16px}
-    #lnwq-box .lnwq-title{font-size:1.15rem}
-    #lnwq-box .lnwq-cta{flex-direction:column;align-items:stretch}
-  }
-</style>
-
 <script>
-/* ===== LnwShop Quiz (isolated scope) ===== */
-(function(){
-  const $$ = (sel,root=document)=>root.querySelector(sel);
-  const $$$ = (sel,root=document)=>Array.from(root.querySelectorAll(sel));
+/* ===== ตั้งค่าโลโก้/ลิงก์/ข้อความ ===== */
+const LOGO_URL   = "https://gj.lnwfile.com/_/gj/_raw/qt/b8/yr.png";   // << ใส่ลิงก์รูปโลโก้ร้าน (PNG/JPG/SVG)
+const LINE_OA_ID = "@openshetts";                           // ไอดี OA
+const SHOP_URL   = "https://www.opensheetsstore.com/product/376/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%AD%E0%B8%9A-%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A3%E0%B8%B2%E0%B8%8A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%8F%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B8%81-%E0%B8%9E-%E0%B8%A3-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95%E0%B8%A5%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%9B%E0%B8%B5-2568-%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B2";             // ลิงก์หน้าร้าน/หน้าสินค้า
+const lineMsg    = "สวัสดีค่ะ สนใจสั่งซื้อสินค้านี้ " + location.href;
 
-  /* === ตั้งค่าแบรนด์/ลิงก์ === */
-  const LINE_OA_ID = '@openshetts'; // แก้เป็น OA ของร้าน
-  const SHOP_URL   = 'https://www.opensheetsstore.com/product/376/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%AD%E0%B8%9A-%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A3%E0%B8%B2%E0%B8%8A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%8F%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B8%81-%E0%B8%9E-%E0%B8%A3-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95%E0%B8%A5%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%9B%E0%B8%B5-2568-%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B2'; // ลิงก์หน้าร้าน/หน้าสินค้า
-  const LINE_ADD_FRIEND = 'https://lin.ee/R9kTJB0' + encodeURIComponent(LINE_OA_ID); // ถ้ามีลิงก์ lin.ee ให้แทนได้
-  const lineMsg = 'สวัสดีครับ/ค่ะ สนใจสั่งซื้อสินค้านี้ ' + (window.location.href || '');
+/* ===== ข้อสอบ (ตัวอย่าง 10 ข้อจากเดิม) ===== */
+const data = [
+  {q:"ข้อใดคือหลักการที่สำคัญที่สุดขององค์การการค้าโลก (WTO) ที่ส่งเสริมการแข่งขันอย่างเป็นธรรม?",
+   a:["หลักการไม่เลือกปฏิบัติ (Non-Discrimination)","หลักการค้าเสรี (Free Trade)","หลักการโปร่งใส (Transparency)","มาตรการปกป้อง (Safeguard)"],
+   c:0, ex:"รวม MFN + National Treatment ให้แข่งขันเท่าเทียม"},
+  {q:"ความตกลงใดของ WTO เกี่ยวกับทรัพย์สินทางปัญญา?",
+   a:["GATT","GATS","TRIPS","TBT"], c:2, ex:"TRIPS = Trade-Related Aspects of IPR"},
+  {q:"ข้อใดไม่ใช่เสาหลักของ AEC Blueprint?",
+   a:["ตลาดและฐานการผลิตเดียว","เพิ่มขีดความสามารถการแข่งขัน","รวมกับเศรษฐกิจโลก","กองทุนการเงินอาเซียน"], c:3, ex:"AEC 2025 มี 4 เสา ไม่รวมกองทุน"},
+  {q:"กฎว่าด้วยแหล่งกำเนิดสินค้า (Rules of Origin) สำคัญเพราะ?",
+   a:["กำหนดภาษีแน่นอนทุกชนิด","ยืนยันว่าสินค้าที่ได้สิทธิเป็นของภาคีจริง","ควบคุม SPS","จำกัดโควตา"], c:1, ex:"กันสวมสิทธิ ต้องพิสูจน์สัญชาติสินค้า"},
+  {q:'"Single Undertaking" หมายถึง?',
+   a:["รับบางข้อตกลงได้","ต้องรับทั้งชุดหรือปฏิเสธทั้งชุด","เจรจาทีละหัวข้อ","พัฒนาได้ยกเว้นส่วนใหญ่"], c:1, ex:'“Nothing is agreed until everything is agreed.”'},
+  {q:"หน่วยงานไทยที่ไต่สวน Anti-Dumping?",
+   a:["กรมศุลกากร","กรมเจรจาการค้าระหว่างประเทศ","กรมการค้าต่างประเทศ","สคก.การแข่งขันทางการค้า"], c:2, ex:"DFT ดูแล AD/CVD/Safeguards"},
+  {q:"ความต่างเด่น RCEP vs CPTPP?",
+   a:["RCEP มาตรฐานแรงงานสูงกว่า","RCEP ริเริ่มโดยจีน, CPTPP โดยสหรัฐ","RCEP มีสมาชิก/ขนาดเศรษฐกิจรวมใหญ่กว่า","CPTPP เน้นสินค้า RCEP เน้นบริการ"], c:2, ex:"RCEP 15 ประเทศ ใหญ่สุดเมื่อวัด GDP+ประชากร"},
+  {q:"BATNA คือ?",
+   a:["ข้อเสนอที่อีกฝ่ายดีที่สุด","จุดยืนสุดท้าย","ทางเลือกดีที่สุดถ้าเจรจาล้มเหลว","ข้อตกลงเบื้องต้น"], c:2, ex:"BATNA แข็งแรง = อำนาจต่อรองสูง"},
+  {q:"CBAM ระยะแรก EU กระทบสินค้ากลุ่มใดมาก?",
+   a:["เกษตร/อาหาร","เหล็ก อะลูมิเนียม ปุ๋ย (ฯลฯ)","อิเล็กทรอนิกส์/ยานยนต์","สิ่งทอ"], c:1, ex:"กลุ่มปล่อยคาร์บอนสูง เช่น เหล็ก ปุ๋ย ซีเมนต์"},
+  {q:"National Single Window (NSW) ของไทยคือ?",
+   a:["พอร์ทัล BOI","ศูนย์กลางข้อมูลนำเข้า-ส่งออก/โลจิสติกส์จุดเดียว","คลังกฎหมายการค้า","แพลตฟอร์มเจรจาการค้ารัฐ"], c:1, ex:"ลดซ้ำซ้อน เอกสารผ่านช่องทางเดียว"}
+];
 
-  // หัวเรื่อง
-  const quizHeader = {
-    title: "แบบทดลองสอบ: นักวิชาการพาณิชย์",
-    subtitle: "กรมเจรจาการค้าระหว่างประเทศ"
-  };
+const q = document.getElementById('q');
+const list = document.getElementById('answers');
+const ex = document.getElementById('ex');
+const exText = document.getElementById('ex-text');
+const prog = document.getElementById('progress');
+const next = document.getElementById('next');
+const panel = document.getElementById('panel');
+const result = document.getElementById('result');
+const scoreEl = document.getElementById('score');
+const restart = document.getElementById('restart');
+const logo = document.getElementById('logo');
+const btnLine = document.getElementById('btnLine');
+const btnShop = document.getElementById('btnShop');
 
-  // ข้อสอบ
-  const quizData = [
-    { q:"ข้อใดคือหลักการที่สำคัญที่สุดขององค์การการค้าโลก (WTO) ที่ส่งเสริมการแข่งขันอย่างเป็นธรรม?",
-      a:[{t:"หลักการไม่เลือกปฏิบัติ (Non-Discrimination)",ok:true},{t:"หลักการค้าเสรี (Free Trade)",ok:false},{t:"หลักการโปร่งใส (Transparency)",ok:false},{t:"หลักการใช้มาตรการปกป้อง (Safeguard Measures)",ok:false}],
-      ex:"หลักการนี้รวม MFN และ National Treatment เพื่อให้ทุกประเทศแข่งขันบนกติกาเดียวกัน"},
-    { q:"ความตกลงใดของ WTO ที่เกี่ยวข้องโดยตรงกับการคุ้มครองทรัพย์สินทางปัญญา?",
-      a:[{t:"GATT",ok:false},{t:"GATS",ok:false},{t:"TRIPS",ok:true},{t:"TBT",ok:false}],
-      ex:"TRIPS กำหนดมาตรฐานขั้นต่ำด้านทรัพย์สินทางปัญญาที่สมาชิกต้องถือปฏิบัติ"},
-    { q:"ข้อใดไม่ใช่เสาหลักของประชาคมเศรษฐกิจอาเซียน (AEC Blueprint)?",
-      a:[{t:"การเป็นตลาดและฐานการผลิตเดียว",ok:false},{t:"การสร้างขีดความสามารถในการแข่งขัน",ok:false},{t:"การรวมตัวเข้ากับเศรษฐกิจโลก",ok:false},{t:"การจัดตั้งกองทุนการเงินอาเซียน",ok:true}],
-      ex:"AEC Blueprint 2025 มี 4 เสาหลักตามคู่มือ ไม่รวมกองทุนการเงินแบบ IMF"},
-    { q:'ในบริบทของ FTA "กฎว่าด้วยแหล่งกำเนิดสินค้า" (Rules of Origin) สำคัญอย่างไร?',
-      a:[{t:"กำหนดอัตราภาษีแน่นอนทุกประเภท",ok:false},{t:"ยืนยันว่าสินค้าที่ได้สิทธิภาษีเป็นของประเทศภาคีจริง",ok:true},{t:"ควบคุมมาตรฐาน SPS",ok:false},{t:"จำกัดโควตานำเข้า",ok:false}],
-      ex:"ป้องกันการสวมสิทธิ ต้องพิสูจน์สัญชาติสินค้า"},
-    { q:'ลักษณะสำคัญของ "Single Undertaking" ในรอบอุรุกวัยคือข้อใด?',
-      a:[{t:"เลือกยอมรับเฉพาะบางความตกลงได้",ok:false},{t:"ต้องยอมรับทั้งชุดหรือปฏิเสธทั้งชุด",ok:true},{t:"เจรจาทีละหัวข้อจนจบ",ok:false},{t:"ประเทศกำลังพัฒนาได้ยกเว้นส่วนใหญ่",ok:false}],
-      ex:'แนวคิด "Nothing is agreed until everything is agreed."'},
-    { q:"หากไทยจะใช้มาตรการตอบโต้การทุ่มตลาด หน่วยงานไต่สวนหลักคือ?",
-      a:[{t:"กรมศุลกากร",ok:false},{t:"กรมเจรจาการค้าระหว่างประเทศ",ok:false},{t:"กรมการค้าต่างประเทศ",ok:true},{t:"กขค.",ok:false}],
-      ex:"กรมการค้าต่างประเทศ (DFT) ดูแล AD/CVD/Safeguards"},
-    { q:"ข้อใดคือความต่างสำคัญระหว่าง RCEP และ CPTPP?",
-      a:[{t:"RCEP มาตรฐานแรงงาน/สิ่งแวดล้อมสูงกว่า",ok:false},{t:"RCEP ริเริ่มโดยจีน ส่วน CPTPP โดยสหรัฐ",ok:false},{t:"RCEP มีสมาชิก/ขนาดเศรษฐกิจรวมใหญ่กว่า",ok:true},{t:"CPTPP เน้นภาษีสินค้า ส่วน RCEP เน้นบริการ",ok:false}],
-      ex:"RCEP 15 ประเทศ ใหญ่สุดเมื่อวัด GDP+ประชากร"},
-    { q:"BATNA ในการเจรจาการค้าหมายถึงอะไร?",
-      a:[{t:"ข้อเสนอที่อีกฝ่ายให้ดีที่สุด",ok:false},{t:"จุดยืนสุดท้ายที่ต่อรองไม่ได้",ok:false},{t:"ทางเลือกที่ดีที่สุดหากเจรจาไม่สำเร็จ",ok:true},{t:"ข้อตกลงเบื้องต้นร่วมกัน",ok:false}],
-      ex:"BATNA ที่ดีทำให้พลังต่อรองสูงขึ้น"},
-    { q:"เมื่อ EU ใช้ CBAM ระยะแรก สินค้าไทยใดกระทบมาก?",
-      a:[{t:"เกษตร/อาหารแปรรูป",ok:false},{t:"เหล็ก เหล็กกล้า อะลูมิเนียม ปุ๋ย",ok:true},{t:"อิเล็กทรอนิกส์/ยานยนต์",ok:false},{t:"สิ่งทอ",ok:false}],
-      ex:"กลุ่มเข้มคาร์บอนสูง เช่น เหล็ก ปุ๋ย ซีเมนต์ ฯลฯ"},
-    { q:"วัตถุประสงค์หลักของ National Single Window (NSW) ของไทยคือ?",
-      a:[{t:"พอร์ทัลขอ BOI สำหรับต่างชาติ",ok:false},{t:"จุดเดียวเชื่อมข้อมูลนำเข้า-ส่งออก/โลจิสติกส์",ok:true},{t:"คลังข้อมูลกฎหมายการค้าทั้งหมด",ok:false},{t:"แพลตฟอร์มเจรจาการค้าระหว่างหน่วยงาน",ok:false}],
-      ex:"ลดซ้ำซ้อน เอกสารผ่านช่องทางเดียว อำนวยความสะดวกการค้า"}
-  ];
+logo.src = LOGO_URL || "";
+btnLine.href = 'https://line.me/R/oaMessage/' + encodeURIComponent(LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
+btnShop.href = SHOP_URL;
 
-  // DOM
-  const root = document.getElementById('lnwq-box');
-  $$('.lnwq-title', root).textContent = quizHeader.title;
-  $$('.lnwq-subtitle', root).textContent = quizHeader.subtitle;
+let i=0,score=0,locked=false;
 
-  const area = $$('#lnwq-question-area', root);
-  const results = $$('#lnwq-results', root);
-  const qText = $$('#lnwq-question-text', root);
-  const ansWrap = $$('#lnwq-answers', root);
-  const nextBtn = $$('#lnwq-next', root);
-  const progress = $$('#lnwq-progress', root);
-  const scoreText = $$('#lnwq-score', root);
-  const restartBtn = $$('#lnwq-restart', root);
-  const exBox = $$('#lnwq-explain', root);
-  const exText = $$('#lnwq-explain-text', root);
+function render(){
+  locked=false; next.disabled=true; ex.style.display="none"; list.innerHTML="";
+  q.textContent = `ข้อ ${i+1}. ${data[i].q}`;
+  prog.textContent = `ข้อ ${i+1} / ${data.length}`;
+  data[i].a.forEach((t,k)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.type='button';
+    b.textContent = "กขคง"[k] + ". " + t;
+    b.onclick=()=>choose(b,k===data[i].c);
+    list.appendChild(b);
+  });
+}
+function choose(button,ok){
+  if(locked) return; locked=true;
+  [...list.children].forEach((b,idx)=>{
+    b.disabled=true;
+    b.classList.add(idx===data[i].c ? 'correct' : 'wrong');
+  });
+  if(ok) score++;
+  exText.textContent = data[i].ex || "";
+  ex.style.display="block";
+  next.textContent = (i===data.length-1) ? "ดูผลคะแนน" : "ข้อต่อไป";
+  next.disabled=false;
+}
+function goNext(){
+  if(i < data.length-1){ i++; render(); }
+  else{ panel.style.display='none'; result.style.display='block'; scoreEl.textContent=`${score} / ${data.length}`; }
+}
+function reset(){ i=0; score=0; panel.style.display='block'; result.style.display='none'; render(); }
 
-  // CTA refs
-  const btnLine = $$('#lnwq-btn-line', root);
-  const btnShop = $$('#lnwq-btn-shop', root);
+next.addEventListener('click',goNext);
+restart.addEventListener('click',reset);
 
-  // set CTA links
-  const lineMsgUrl = 'https://line.me/R/oaMessage/' + encodeURIComponent(LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
-  btnLine.href = lineMsgUrl; // เปิดแชท OA พร้อมข้อความ
-  btnShop.href = SHOP_URL;   // ลิงก์ไปหน้าร้าน/หน้าสินค้า
+/* ===== ตัวกันก๊อปพื้นฐาน (กันง่าย ๆ เท่านั้น) ===== */
+document.addEventListener('keydown',function(e){
+  const k=(e.ctrlKey||e.metaKey) && ['s','S','u','U','p','P','c','C'].includes(e.key);
+  const fkeys=[123]; // F12
+  if(k || fkeys.includes(e.keyCode)){ e.preventDefault(); e.stopPropagation(); }
+},true);
+document.addEventListener('dragstart',e=>e.preventDefault());
+document.addEventListener('copy',e=>e.preventDefault());
 
-  let idx = 0, score = 0, locked = false;
-
-  function renderQuestion(){
-    locked = false;
-    nextBtn.disabled = true;
-    exBox.hidden = true;
-    ansWrap.innerHTML = "";
-
-    const item = quizData[idx];
-    qText.textContent = `ข้อ ${idx+1}. ${item.q}`;
-    progress.textContent = `ข้อ ${idx+1} / ${quizData.length}`;
-
-    item.a.forEach((opt,i)=>{
-      const btn = document.createElement('button');
-      btn.className = 'lnwq-answer';
-      btn.type = 'button';
-      btn.setAttribute('aria-pressed','false');
-      btn.textContent = `${"กขคง"[i] || ""}. ` + opt.t;
-      btn.addEventListener('click', ()=> choose(btn,opt.ok));
-      ansWrap.appendChild(btn);
-    });
-  }
-
-  function choose(button,isCorrect){
-    if(locked) return;
-    locked = true;
-
-    // ล็อกและทำสีทุกช้อยส์
-    $$$('.lnwq-answer', root).forEach((b,i)=>{
-      b.disabled = true;
-      const ok = quizData[idx].a[i].ok;
-      b.classList.add(ok ? 'lnwq-correct' : 'lnwq-wrong');
-    });
-
-    if(isCorrect) score++;
-    exText.textContent = quizData[idx].ex || "";
-    exBox.hidden = false;
-
-    if(idx === quizData.length-1){ nextBtn.textContent = 'ดูผลคะแนน'; }
-    nextBtn.disabled = false;
-  }
-
-  function next(){
-    if(idx < quizData.length-1){
-      idx++;
-      nextBtn.textContent = 'ข้อต่อไป';
-      renderQuestion();
-    }else{
-      showResults();
-    }
-  }
-
-  function showResults(){
-    area.hidden = true;
-    results.hidden = false;
-    scoreText.textContent = `${score} / ${quizData.length}`;
-  }
-
-  function restart(){
-    idx = 0; score = 0; locked = false;
-    area.hidden = false; results.hidden = true;
-    nextBtn.textContent = 'ข้อต่อไป';
-    renderQuestion();
-  }
-
-  nextBtn.addEventListener('click', next);
-  restartBtn.addEventListener('click', restart);
-
-  // เริ่มทำงาน
-  renderQuestion();
-})();
+render();
 </script>
+</body>
+</html>
