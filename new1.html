@@ -66,7 +66,7 @@
     <div class="score" id="score">0 / 10</div>
     <p>หากสนใจสั่งซื้อไฟล์/เล่ม กดปุ่มด้านล่างได้เลย</p>
     <div class="cta">
-      <a id="btnLine" class="btn btn-line" target="_blank" rel="noopener">แชทกับแอดมิน (LINE)</a>
+      <a id="btnLine" class="btn btn-line" target="_blank" rel="noopener">แชทกับแอดมินสั่งทาง(LINE)</a>
       <a id="btnShop" class="btn btn-shop" target="_blank" rel="noopener">สั่งซื้อที่หน้าร้าน</a>
     </div>
     <button id="restart" class="btn success">ทำแบบทดสอบใหม่</button>
@@ -119,8 +119,8 @@ const logo = document.getElementById('logo');
 const btnLine = document.getElementById('btnLine');
 const btnShop = document.getElementById('btnShop');
 
-logo.src = LOGO_URL || "";
-btnLine.href = 'https://line.me/R/oaMessage/' + encodeURIComponent(LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
+logo.src = LOGO_URL || "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";
+btnLine.href = 'https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url' + encodeURIComponent(LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
 btnShop.href = SHOP_URL;
 
 let i=0,score=0,locked=false;
@@ -172,5 +172,6 @@ render();
 </script>
 </body>
 </html>
+
 
 
