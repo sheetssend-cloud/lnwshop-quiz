@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ตัวสร้างโค้ดกล่องทดลองสอบ | Open Sheets</title>
+<style>
+  body{font-family:"Sarabun",system-ui,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;margin:0;background:#f6f7fb}
+  .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+  h1{margin:8px 0 16px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.06);padding:16px}
+  label{font-weight:700;display:block;margin-bottom:6px}
+  input,textarea{width:100%;box-sizing:border-box;border:1px solid #d6d9df;border-radius:8px;padding:10px;font-size:14px}
+  textarea{min-height:240px;font-family:ui-monospace,Consolas,monospace}
+  .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .small{font-size:12px;color:#555}
+  pre{white-space:pre-wrap;word-break:break-word}
+</style>
+<body>
+<div class="wrap">
+  <h1>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ) — Open Sheets</h1>
+  <div class="grid">
+    <div class="card">
+      <div class="row">
+        <div style="flex:1">
+          <label>หัวข้อใหญ่ (แสดงในกล่อง)</label>
+          <input id="title" placeholder="เช่น แบบทดลองสอบ: นักวิชาการพาณิชย์">
+        </div>
+        <div style="flex:1">
+          <label>หน่วยงาน/คำอธิบายย่อย</label>
+          <input id="subtitle" placeholder="เช่น กรมเจรจาการค้าระหว่างประเทศ">
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1">
+          <label>โลโก้ร้าน (URL รูป .png/.jpg)</label>
+          <input id="logo" placeholder="https://.../logo.png">
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1">
+          <label>LINE OA ID (เช่น @openshetts)</label>
+          <input id="line" placeholder="@openshetts">
+        </div>
+        <div style="flex:1">
+          <label>ลิงก์หน้าร้าน/หน้าสินค้า</label>
+          <input id="shop" placeholder="https://www.yourshop.example">
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <label>วางแนวข้อสอบ (ฟอร์แมตง่าย)</label>
+        <textarea id="src" placeholder=
+"ตัวอย่างรูปแบบ (10 ข้อ)
+Q1: ข้อใดคือหลักการสำคัญของ WTO ที่ส่งเสริมการแข่งขันเท่าเทียม?
+ก) หลักการไม่เลือกปฏิบัติ (Non-Discrimination)
+ข) หลักการค้าเสรี
+ค) หลักการโปร่งใส
+ง) มาตรการปกป้อง
+ANS: ก
+EXP: หลักการ MFN + National Treatment
+
+Q2: ความตกลงใดเกี่ยวกับทรัพย์สินทางปัญญา?
+ก) GATT
+ข) GATS
+ค) TRIPS
+ง) TBT
+ANS: ค
+EXP: TRIPS
+... (จนครบ 10 ข้อ)"></textarea>
+        <div class="small">ใช้ตัวอักษร ก/ข/ค/ง ระบุคำตอบด้วย ANS: และคำอธิบายด้วย EXP:</div>
+      </div>
+      <div style="margin-top:12px" class="row">
+        <button class="btn" onclick="generate()">Generate โค้ด</button>
+        <button class="btn" style="background:#198754" onclick="copyOut()">คัดลอกโค้ด</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>ผลลัพธ์ (quiz.html)</label>
+      <textarea id="out" style="min-height:520px"></textarea>
+      <div class="small" style="margin-top:6px">ก็อปทั้งหมดไปวางเป็นไฟล์ <b>quiz.html</b> (หรือชื่ออื่น) แล้วอัปขึ้นโฮสต์ภายนอก จากนั้นฝัง iFrame ใน LnwShop</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TEMPLATE = `__QUIZ_HTML__`; // จะถูกแทนด้วยไฟล์จากข้อ 1 อัตโนมัติ (มี _b64 ให้พร้อ ม)
+
+function toQuizArray(txt){
+  const lines = txt.replace(/\\r/g,'').split('\\n');
+  const list=[], lettersMap = {'ก':0,'ข':1,'ค':2,'ง':3};
+  let cur=null, opts=[];
+  function pushCur(){
+    if(!cur) return;
+    if(opts.length!==4) throw new Error("แต่ละข้อ ต้องมีช้อยส์ครบ 4 ตัว (ก ข ค ง)");
+    if(cur.ans==null) throw new Error("ระบุ ANS: (คำตอบ) ให้ครบทุกข้อ");
+    list.push({
+      q:cur.q.trim(),
+      a:opts.map((t,i)=>({t, ok:i===cur.ans})),
+      ex:(cur.exp||"").trim()
+    });
+    cur=null; opts=[];
+  }
+  for(let i=0;i<lines.length;i++){
+    const L=lines[i].trim();
+    if(!L) continue;
+    const qm = L.match(/^Q\\s*\\d*[:：]\\s*(.+)$/i);
+    if(qm){ pushCur(); cur={q:qm[1], ans:null, exp:""}; continue; }
+    const om = L.match(/^([กขคง])[\\)\\.|\\:]\\s*(.+)$/);
+    if(om){ const idx = lettersMap[om[1]]; opts[idx]=om[2]; continue; }
+    const am = L.match(/^ANS[:：]\\s*([กขคง])$/i);
+    if(am){ if(!cur) throw new Error("พบ ANS: ก่อน Q:"); cur.ans=lettersMap[am[1]]; continue; }
+    const em = L.match(/^EXP[:：]\\s*(.+)$/i);
+    if(em){ if(!cur) throw new Error("พบ EXP: ก่อน Q:"); cur.exp=em[1]; continue; }
+  }
+  pushCur();
+  if(list.length!==10) throw new Error("ต้องมี 10 ข้อพอดี (ตอนนี้ได้ "+list.length+")");
+  return list;
+}
+function b64(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
+function generate(){
+  try{
+    const title = document.getElementById('title').value||"แบบทดลองสอบ";
+    const subtitle = document.getElementById('subtitle').value||"";
+    const logo = document.getElementById('logo').value||"";
+    const line = document.getElementById('line').value||"@openshetts";
+    const shop = document.getElementById('shop').value||"https://www.yourshopurl.example";
+    const arr = toQuizArray(document.getElementById('src').value);
+
+    // ใส่ Base64 quizData ลงในเทมเพลต
+    let html = TEMPLATE;
+
+    // แทนค่าคอนฟิก
+    html = html.replace(/const LOGO_URL\\s*=\\s*"[^"]*"/, 'const LOGO_URL="'+logo.replace(/"/g,'\\"')+'"');
+    html = html.replace(/const LINE_OA_ID\\s*=\\s*"[^"]*"/, 'const LINE_OA_ID="'+line.replace(/"/g,'\\"')+'"');
+    html = html.replace(/const SHOP_URL\\s*=\\s*"[^"]*"/,   'const SHOP_URL="'+shop.replace(/"/g,'\\"')+'"');
+
+    // แทนชื่อหัวข้อ/ซับไตเติลใน DOM (มองหาข้อความเดิมแล้วแทน)
+    html = html.replace(/<h2 class="lnwq-title">[^<]+<\\/h2>/, '<h2 class="lnwq-title">'+title.replace(/</g,'&lt;')+'</h2>');
+    html = html.replace(/<p class="lnwq-subtitle">[^<]*<\\/p>/, '<p class="lnwq-subtitle">'+subtitle.replace(/</g,'&lt;')+'</p>');
+
+    // แทน Base64 data
+    html = html.replace(/const _b64\\s*=\\s*`[\\s\\S]*?`;/, 'const _b64=`'+b64(arr)+'`;');
+
+    document.getElementById('out').value = html;
+  }catch(e){
+    alert("เกิดข้อผิดพลาด: "+e.message);
+  }
+}
+function copyOut(){
+  const t=document.getElementById('out');
+  t.select(); t.setSelectionRange(0, 999999);
+  document.execCommand('copy');
+  alert('คัดลอกโค้ดเรียบร้อย');
+}
+
+/* ฝังเทมเพลตของข้อ 1 ลงในตัวแปร TEMPLATE แบบอัตโนมัติ:
+   กรุณาแทน __QUIZ_HTML__ ด้วยโค้ดไฟล์ quiz.html จากส่วนที่ 1 ทั้งก้อนก่อนใช้งานจริง */
+</script>
+</body>
+</html>
