@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ) — Open Sheets</title>
+<title>ตัวสร้างโค้ดกล่องทดลองสอบ — ไม่มีข้อแม้</title>
 <style>
-  :root{--b:#0d6efd;--g:#198754;--mut:#6c757d}
   body{font-family:"Sarabun",system-ui,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;margin:0;background:#f6f7fb}
   .wrap{max-width:1120px;margin:24px auto;padding:0 16px}
   h1{margin:8px 0 16px}
@@ -13,59 +12,50 @@
   .card{background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.06);padding:16px}
   label{font-weight:700;display:block;margin-bottom:6px}
   input,textarea{width:100%;box-sizing:border-box;border:1px solid #d6d9df;border-radius:8px;padding:10px;font-size:14px}
-  textarea{min-height:260px;font-family:ui-monospace,Consolas,monospace}
+  textarea{min-height:240px;font-family:ui-monospace,Consolas,monospace}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .btn{background:var(--b);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
-  .btn.g{background:var(--g)} .btn.gray{background:var(--mut)}
-  .small{font-size:12px;color:#555}
+  .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
+  .btn.g{background:#198754}.btn.gray{background:#6c757d}
   #out{min-height:520px}
-  #status{margin-top:10px;font-weight:700}
-  #status.err{color:#dc3545} #status.ok{color:#198754}
+  .hint{font-size:12px;color:#555}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>ตัวสร้างโค้ดกล่องทดลองสอบ (10 ข้อ) — Open Sheets</h1>
+  <h1>ตัวสร้างโค้ดกล่องทดลองสอบ — Open Sheets</h1>
   <div class="grid">
     <div class="card">
       <div class="row">
         <div style="flex:1">
-          <label>หัวข้อใหญ่ (แสดงในกล่อง)</label>
-          <input id="title" value="แบบทดลองสอบ: นักวิชาการพาณิชย์">
+          <label>หัวข้อใหญ่ (เว้นได้)</label>
+          <input id="title" placeholder="แบบทดลองสอบ">
         </div>
         <div style="flex:1">
-          <label>หน่วยงาน/คำอธิบายย่อย</label>
-          <input id="subtitle" value="กรมเจรจาการค้าระหว่างประเทศ">
+          <label>หน่วยงาน/คำอธิบายย่อย (เว้นได้)</label>
+          <input id="subtitle" placeholder="กรมเจรจาการค้าระหว่างประเทศ">
         </div>
       </div>
       <div class="row" style="margin-top:10px">
         <div style="flex:1">
-          <label>โลโก้ร้าน (URL รูป .png/.jpg) — เว้นว่างได้</label>
-          <input id="logo" placeholder="https://.../logo.png" value="">
+          <label>โลโก้ร้าน (URL .png/.jpg เว้นได้)</label>
+          <input id="logo" placeholder="">
         </div>
       </div>
       <div class="row" style="margin-top:10px">
         <div style="flex:1">
-          <label>LINE OA ID (เช่น @openshetts)</label>
-          <input id="line" value="@openshetts">
+          <label>LINE OA ID (เว้นได้)</label>
+          <input id="line" placeholder="@openshetts">
         </div>
         <div style="flex:1">
-          <label>ลิงก์หน้าร้าน/หน้าสินค้า</label>
-          <input id="shop" value="https://www.yourshop.example">
+          <label>ลิงก์หน้าร้าน/หน้าสินค้า (เว้นได้)</label>
+          <input id="shop" placeholder="https://www.yourshop.example">
         </div>
       </div>
-
       <div style="margin-top:14px">
-        <label>วางแนวข้อสอบ (รูปแบบภาษาไทย)</label>
-        <textarea id="src" placeholder="ดูตัวอย่างด้านล่าง"></textarea>
-        <div class="small" style="margin-top:6px">
-          รูปแบบที่รองรับ: <b>ข้อ 1.</b> ตามด้วยคำถาม • ช้อยส์ <b>ก)</b> <b>ข)</b> <b>ค)</b> <b>ง)</b> • บรรทัด <b>คำตอบ :</b> (ก/ข/ค/ง หรือ 1/2/3/4) • บรรทัด <b>คำอธิบาย :</b> (ต่อหลายบรรทัดได้)<br>
-          ต้องครบ <b>10 ข้อพอดี</b>
-        </div>
+        <label>วางแนวข้อสอบ (รูปแบบไทย — ใส่กี่ข้อก็ได้)</label>
+        <textarea id="src" placeholder="ตัวอย่าง:&#10;ข้อ 1. คำถาม...&#10;ก) ตัวเลือก1&#10;ข) ตัวเลือก2&#10;ค) ตัวเลือก3&#10;ง) ตัวเลือก4&#10;คำตอบ : ก&#10;คำอธิบาย : ใส่อธิบาย..."></textarea>
+        <div class="hint">รองรับ: ข้อ 1./2./… • ช้อยส์ ก)/ข)/ค)/ง) • คำตอบ : (ก/ข/ค/ง หรือ 1–4) • คำอธิบาย : (ไม่ใส่ก็ได้)</div>
       </div>
-
-      <div id="status" class=""></div>
-
       <div style="margin-top:12px" class="row">
         <button class="btn" onclick="generate()">Generate โค้ด</button>
         <button class="btn g" onclick="downloadOut()">ดาวน์โหลด (quiz.html)</button>
@@ -76,356 +66,166 @@
     <div class="card">
       <label>ผลลัพธ์ (quiz.html)</label>
       <textarea id="out"></textarea>
-      <div class="small" style="margin-top:6px">คัดลอกทั้งหมดไปวางเป็นไฟล์ <b>quiz.html</b> หรือใช้ปุ่มดาวน์โหลด → อัปขึ้น GitHub Pages/Netlify แล้วฝัง iFrame ใน LnwShop</div>
+      <div class="hint" style="margin-top:6px">คัดลอกทั้งหมดเป็นไฟล์ <b>quiz.html</b> หรือกดดาวน์โหลด → อัปขึ้นโฮสต์ (GitHub Pages/Netlify) แล้วฝัง iFrame ใน LnwShop</div>
     </div>
   </div>
 </div>
 
 <script>
-/* ---------- TEMPLATE (quiz.html) ---------- */
+/* ================== TEMPLATE (กล่องสอบสมบูรณ์) ================== */
 const TEMPLATE = `<!doctype html>
-<html lang="th"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>__TITLE__ | Open Sheets</title>
 <style>
   html,body{margin:0;background:#f0f2f5;font-family:"Sarabun",system-ui,Segoe UI,Roboto,"Noto Sans Thai",sans-serif}
-  #lnwq-box{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--mut:#6c757d;--text:#333;color:var(--text);-webkit-user-select:none;user-select:none}
-  #lnwq-box .lnwq-container{background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);max-width:800px;margin:16px auto;overflow:hidden}
-  #lnwq-box .lnwq-header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:18px 22px;text-align:center;position:relative}
-  #lnwq-box .lnwq-title{margin:0;font-size:1.35rem}
-  #lnwq-box .lnwq-subtitle{margin:.25rem 0 0;opacity:.95}
-  #lnwq-box .lnwq-brand{margin:.35rem 0 0;opacity:.95;font-size:.95rem}
-  #lnwq-box .lnwq-logo{position:absolute;left:14px;top:14px;height:42px;width:auto;border-radius:8px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);padding:4px;object-fit:contain}
-  #lnwq-box .lnwq-body{padding:22px}
-  #lnwq-box .lnwq-qtext{font-weight:700;line-height:1.6;font-size:1.05rem;margin:0 0 16px}
-  #lnwq-box .lnwq-answers{display:grid;gap:10px}
-  #lnwq-box .lnwq-answer{background:#f8f9fa;border:2px solid #ced4da;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;transition:.18s}
-  #lnwq-box .lnwq-answer:hover:not([disabled]){background:#eef2f6;border-color:#0d6efd}
-  #lnwq-box .lnwq-answer.lnwq-correct{background:#d1e7dd;border-color:var(--ok);color:#0f5132;font-weight:700}
-  #lnwq-box .lnwq-answer.lnwq-wrong{background:#f8d7da;border-color:var(--bad);color:#842029}
-  #lnwq-box .lnwq-answer:disabled{opacity:.9;cursor:not-allowed}
-  #lnwq-box .lnwq-explain{background:#f8f9fa;border-left:5px solid #6c757d;padding:12px 14px;margin-top:14px;font-size:.98rem}
-  #lnwq-box .lnwq-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid #eee}
-  #lnwq-box .lnwq-progress{font-weight:600}
-  #lnwq-box .lnwq-btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;transition:.18s;display:inline-block;text-decoration:none}
-  #lnwq-box .lnwq-btn:disabled{background:var(--mut);cursor:not-allowed}
-  #lnwq-box .lnwq-success{background:#28a745}
-  #lnwq-box .lnwq-result-title{font-size:1.6rem;margin:0 0 6px}
-  #lnwq-box .lnwq-score{font-size:2.6rem;font-weight:800;color:var(--p);margin:6px 0 14px}
-  #lnwq-box .lnwq-cta{margin:8px 0 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  #lnwq-box .lnwq-cta-text{margin:0 10px 0 0}
-  #lnwq-box .lnwq-line{background:#06c755}
-  #lnwq-box .lnwq-shop{background:#0d6efd}
-  *{-webkit-touch-callout:none} img{-webkit-user-drag:none;user-drag:none}
-  @media (max-width:480px){#lnwq-box .lnwq-body{padding:16px}#lnwq-box .lnwq-title{font-size:1.15rem}#lnwq-box .lnwq-cta{flex-direction:column;align-items:stretch}}
+  #lnwq-box{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--mut:#6c757d;--text:#333;color:var(--text)}
+  .c{background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);max-width:800px;margin:16px auto;overflow:hidden}
+  .h{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:18px 22px;text-align:center;position:relative}
+  .t{margin:0;font-size:1.35rem}
+  .s{margin:.25rem 0 0;opacity:.95}
+  .brand{margin:.35rem 0 0;opacity:.95;font-size:.95rem}
+  .logo{position:absolute;left:14px;top:14px;height:42px;width:auto;border-radius:8px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);padding:4px;object-fit:contain}
+  .b{padding:22px}
+  .q{font-weight:700;line-height:1.6;font-size:1.05rem;margin:0 0 16px}
+  .ans{display:grid;gap:10px}
+  .opt{background:#f8f9fa;border:2px solid #ced4da;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;transition:.18s}
+  .opt:hover:not([disabled]){background:#eef2f6;border-color:#0d6efd}
+  .ok{background:#d1e7dd;border-color:var(--ok);color:#0f5132;font-weight:700}
+  .bad{background:#f8d7da;border-color:#dc3545;color:#842029}
+  .opt:disabled{opacity:.9;cursor:not-allowed}
+  .ex{background:#f8f9fa;border-left:5px solid #6c757d;padding:12px 14px;margin-top:14px;font-size:.98rem}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid #eee}
+  .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
+  .btn:disabled{background:#6c757d;cursor:not-allowed}
+  .result h3{font-size:1.6rem;margin:0 0 6px}
+  .score{font-size:2.6rem;font-weight:800;color:#005c97;margin:6px 0 14px}
 </style>
-<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
-<div id="lnwq-box" aria-live="polite">
-  <div class="lnwq-container" role="region" aria-label="แบบทดลองสอบ">
-    <div class="lnwq-header">
-      <img class="lnwq-logo" id="lnwq-logo" alt="Logo" src="__LOGO__">
-      <h2 class="lnwq-title">__TITLE__</h2>
-      <p class="lnwq-subtitle">__SUBTITLE__</p>
-      <p class="lnwq-brand">ร้านหนังสือ <b>Open Sheets</b> — จัดจำหน่ายหนังสือแนวข้อสอบ | LINE: <b>__LINEOA__</b></p>
+<body>
+<div id="lnwq-box">
+  <div class="c">
+    <div class="h">
+      <img class="logo" id="logo" alt="Logo" src="__LOGO__">
+      <h2 class="t">__TITLE__</h2>
+      <p class="s">__SUBTITLE__</p>
+      <p class="brand">ร้านหนังสือ <b>Open Sheets</b> | LINE: <b>__LINEOA__</b></p>
     </div>
-    <div class="lnwq-body">
-      <div id="lnwq-question-area">
-        <p id="lnwq-question-text" class="lnwq-qtext"></p>
-        <div id="lnwq-answers" class="lnwq-answers" role="group" aria-label="ตัวเลือกคำตอบ"></div>
-        <div id="lnwq-explain" class="lnwq-explain" hidden><strong>คำอธิบาย:</strong> <span id="lnwq-explain-text"></span></div>
-        <div class="lnwq-nav"><span id="lnwq-progress" class="lnwq-progress"></span><button id="lnwq-next" class="lnwq-btn" disabled>ข้อต่อไป</button></div>
+    <div class="b">
+      <div id="qa">
+        <p id="qt" class="q"></p>
+        <div id="aw" class="ans"></div>
+        <div id="ex" class="ex" hidden><strong>คำอธิบาย:</strong> <span id="ex-t"></span></div>
+        <div class="nav"><span id="prog"></span><button id="next" class="btn" disabled>ข้อต่อไป</button></div>
       </div>
-      <div id="lnwq-results" hidden>
-        <h3 class="lnwq-result-title">ผลการทดสอบ</h3>
-        <p>คุณทำได้</p><div id="lnwq-score" class="lnwq-score"></div>
-        <div class="lnwq-cta">
-          <p class="lnwq-cta-text">สนใจสั่งซื้อไฟล์/เล่ม กดปุ่มด้านล่างได้เลย</p>
-          <a id="lnwq-btn-line" class="lnwq-btn lnwq-line" target="_blank" rel="noopener">แชทกับแอดมิน (LINE)</a>
-          <a id="lnwq-btn-shop" class="lnwq-btn lnwq-shop" target="_blank" rel="noopener">สั่งซื้อที่หน้าร้าน</a>
-        </div>
-        <button id="lnwq-restart" class="lnwq-btn lnwq-success">ทำแบบทดสอบใหม่</button>
+      <div id="rs" class="result" hidden>
+        <h3>ผลการทดสอบ</h3>
+        <p>คุณทำได้</p>
+        <div id="score" class="score"></div>
+        <button id="restart" class="btn">ทำแบบทดสอบใหม่</button>
       </div>
     </div>
   </div>
 </div>
 <script>
-const LOGO_URL="__LOGO__";
-const LINE_OA_ID="__LINEOA__";
-const SHOP_URL="__SHOP__";
-const _b64='__B64__';
+const LOGO="__LOGO__", TITLE="__TITLE__", SUB="__SUBTITLE__", LINEOA="__LINEOA__", SHOP="__SHOP__", DATA=__DATA__;
 (function(){
-  const root=document.getElementById('lnwq-box');
-  const qArea=root.querySelector('#lnwq-question-area');
-  const rs=root.querySelector('#lnwq-results');
-  const qTxt=root.querySelector('#lnwq-question-text');
-  const ans=root.querySelector('#lnwq-answers');
-  const next=root.querySelector('#lnwq-next');
-  const prog=root.querySelector('#lnwq-progress');
-  const scoreEl=root.querySelector('#lnwq-score');
-  const exBox=root.querySelector('#lnwq-explain');
-  const exTxt=root.querySelector('#lnwq-explain-text');
-  const btnLine=root.querySelector('#lnwq-btn-line');
-  const btnShop=root.querySelector('#lnwq-btn-shop');
-  const logoImg=root.querySelector('#lnwq-logo');
-  if(!LOGO_URL){logoImg.style.display='none';} else {logoImg.src=LOGO_URL;}
-  const lineMsg='สวัสดี สนใจสั่งซื้อสินค้านี้ '+(document.referrer||location.href);
-  btnLine.href='https://line.me/R/oaMessage/'+encodeURIComponent(LINE_OA_ID)+'/?'+encodeURIComponent(lineMsg);
-  btnShop.href=SHOP_URL;
-  function d(b){try{return JSON.parse(atob(b.replace(/\\s+/g,'')));}catch(e){return [];}}
-  const quizData=d(_b64);
-  let i=0,score=0,locked=false;
+  const L=document.getElementById('logo'); if(!LOGO) L.style.display='none'; else L.src=LOGO;
+  document.title = (TITLE||'แบบทดลองสอบ')+' | Open Sheets';
+  const qt=document.getElementById('qt'), aw=document.getElementById('aw'), prog=document.getElementById('prog');
+  const ex=document.getElementById('ex'), ext=document.getElementById('ex-t'), next=document.getElementById('next');
+  const qa=document.getElementById('qa'), rs=document.getElementById('rs'), score=document.getElementById('score');
+  let i=0, sc=0, locked=false, d=Array.isArray(DATA)&&DATA.length?DATA:[{q:'ตัวอย่างคำถาม',a:[{t:'ตัวเลือก ก',ok:true},{t:'ตัวเลือก ข'},{t:'ตัวเลือก ค'},{t:'ตัวเลือก ง'}],ex:''}];
   function render(){
-    locked=false; next.disabled=true; exBox.hidden=true; ans.innerHTML='';
-    const item=quizData[i]; if(!item){qArea.hidden=true; rs.hidden=false; scoreEl.textContent=score+'/0'; return;}
-    qTxt.textContent='ข้อ '+(i+1)+'. '+item.q;
-    prog.textContent='ข้อ '+(i+1)+' / '+quizData.length;
-    item.a.forEach((opt,idx)=>{
-      const b=document.createElement('button'); b.type='button'; b.className='lnwq-answer';
-      b.textContent=('กขคง'[idx]||'')+'. '+opt.t;
-      b.onclick=()=>choose(b,opt.ok,idx);
-      ans.appendChild(b);
-    });
+    locked=false; next.disabled=true; ex.hidden=true; aw.innerHTML='';
+    const it=d[i]; qt.textContent='ข้อ '+(i+1)+'. '+(it.q||''); prog.textContent='ข้อ '+(i+1)+' / '+d.length;
+    it.a.forEach((o,k)=>{const b=document.createElement('button'); b.className='opt'; b.textContent=('กขคง'[k]||'')+'. '+(o.t||''); b.onclick=()=>choose(o.ok,b); aw.appendChild(b);});
   }
-  function choose(btn,isOk){
+  function choose(ok,btn){
     if(locked) return; locked=true;
-    [...ans.children].forEach((b,j)=>{ b.disabled=true; const ok=quizData[i].a[j].ok; b.classList.add(ok?'lnwq-correct':'lnwq-wrong'); });
-    if(isOk) score++;
-    exTxt.textContent=quizData[i].ex||''; exBox.hidden=false;
-    next.textContent=(i===quizData.length-1)?'ดูผลคะแนน':'ข้อต่อไป'; next.disabled=false;
+    [...aw.children].forEach((b,j)=>{ b.disabled=true; b.classList.add(d[i].a[j].ok?'ok':'bad'); });
+    if(ok) sc++; ext.textContent=d[i].ex||''; ex.hidden=!ext.textContent;
+    next.textContent=(i===d.length-1)?'ดูผลคะแนน':'ข้อต่อไป'; next.disabled=false;
   }
-  function go(){
-    if(i<quizData.length-1){i++; next.textContent='ข้อต่อไป'; render();}
-    else{ qArea.hidden=true; rs.hidden=false; scoreEl.textContent=score+' / '+quizData.length; }
-  }
-  function restart(){ i=0; score=0; locked=false; qArea.hidden=false; rs.hidden=true; next.textContent='ข้อต่อไป'; render(); }
-  next.addEventListener('click',go);
-  root.querySelector('#lnwq-restart').addEventListener('click',restart);
+  next.onclick=()=>{ if(i<d.length-1){i++; next.textContent='ข้อต่อไป'; render();} else {qa.hidden=true; rs.hidden=false; score.textContent=sc+' / '+d.length;} };
+  document.getElementById('restart').onclick=()=>{i=0; sc=0; locked=false; qa.hidden=false; rs.hidden=true; next.textContent='ข้อต่อไป'; render();};
   render();
 })();
 </script>
 </body></html>`;
 
-/* ---------- ตัวอย่างอินพุตแบบภาษาไทย ---------- */
-const SAMPLE = `ข้อ 1. ตัวอย่างคำถามหนึ่ง
-ก) ตัวเลือก ก
-ข) ตัวเลือก ข
-ค) ตัวเลือก ค
-ง) ตัวเลือก ง
-คำตอบ : ก
-คำอธิบาย : อธิบายเหตุผลของคำตอบ (จะพิมพ์หลายบรรทัดก็ได้)
-
-ข้อ 2. ตัวอย่างคำถามสอง
-ก) ตัวเลือก ก
-ข) ตัวเลือก ข
-ค) ตัวเลือก ค
-ง) ตัวเลือก ง
-คำตอบ : ข
-คำอธิบาย : อธิบายเหตุผล
-
-ข้อ 3. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ค
-คำอธิบาย : …
-
-ข้อ 4. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ง
-คำอธิบาย : …
-
-ข้อ 5. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ก
-คำอธิบาย : …
-
-ข้อ 6. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ข
-คำอธิบาย : …
-
-ข้อ 7. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ค
-คำอธิบาย : …
-
-ข้อ 8. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ง
-คำอธิบาย : …
-
-ข้อ 9. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ก
-คำอธิบาย : …
-
-ข้อ 10. …
-ก) …
-ข) …
-ค) …
-ง) …
-คำตอบ : ข
-คำอธิบาย : …`;
-
-/* ---------- Parser + Generator (รองรับ “ข้อ x.” / “คำตอบ :” / “คำอธิบาย :”) ---------- */
-function parseThaiSource(txt){
-  if(!txt.trim()){ txt = SAMPLE; document.getElementById('src').value = SAMPLE; }
-  const lines = txt.replace(/\r/g,'').split('\n');
-  const items = [];
-  const mapLetter = {'ก':0,'ข':1,'ค':2,'ง':3};
-  let cur=null, opts=['','','',''], expBuf=[];
-  const errors=[];
-
-  function push(qnLine){
-    if(!cur) return;
-    const have4 = opts.filter(Boolean).length===4;
-    if(!have4) errors.push(`ข้อที่ ${items.length+1}: ต้องมีช้อยส์ ก/ข/ค/ง ครบ 4 บรรทัด`);
-    if(cur.ans==null) errors.push(`ข้อที่ ${items.length+1}: ขาดบรรทัด "คำตอบ :"`);
-    if(errors.length) return;
-
-    cur.ex = expBuf.join(' ').trim();
-    items.push({ q:cur.q.trim(), a:opts.map((t,i)=>({t,ok:i===cur.ans})), ex:cur.ex });
-    cur=null; opts=['','','','']; expBuf=[];
+/* ================== PARSER: ยืดหยุ่น/ไม่บังคับอะไร ================== */
+function parseFlexible(txt){
+  const lines = (txt||'').replace(/\r/g,'').split('\n');
+  const map = {'ก':0,'ข':1,'ค':2,'ง':3};
+  let cur=null, opts=['','','',''], ex=[];
+  const items=[];
+  function push(){
+    if(!cur){return;}
+    // เติมช้อยส์ให้ครบ 4
+    for(let i=0;i<4;i++){ if(!opts[i]) opts[i]=''; }
+    // ถ้าไม่มีคำตอบ → ใช้ข้อ ก เป็นคำตอบ
+    if(cur.ans==null) cur.ans=0;
+    items.push({
+      q: (cur.q||'').trim(),
+      a: opts.map((t,i)=>({t: (t||'').trim(), ok: i===cur.ans})),
+      ex: ex.join(' ').trim()
+    });
+    cur=null; opts=['','','','']; ex=[];
   }
-
-  for(let ln=0; ln<lines.length; ln++){
-    const raw = lines[ln], L = raw.trim();
-    if(!L) continue;
-
-    // บรรทัดคำถาม "ข้อ 1." หรือ "ข้อ 1:"
-    const qm = L.match(/^ข้อ\s*(\d+)[\.\:\-：]\s*(.+)$/);
-    if(qm){
-      push();
-      cur = {q: qm[2], ans: null, ex: ""};
-      continue;
-    }
-
-    // ช้อยส์
-    const om = L.match(/^([กขคง])[)\.\:\-]\s*(.+)$/);
-    if(om){
-      if(!cur){ errors.push(`พบช้อยส์ก่อนเริ่มคำถามที่บรรทัด ${ln+1}`); break; }
-      const idx = mapLetter[om[1]];
-      opts[idx] = om[2];
-      continue;
-    }
-
-    // คำตอบ : (ก/ข/ค/ง หรือ 1/2/3/4)
+  for(const raw of lines){
+    const L = raw.trim(); if(!L) continue;
+    const qm = L.match(/^ข้อ\s*\d+[\.\:\-：]\s*(.*)$/);
+    if(qm){ push(); cur={q:qm[1], ans:null}; continue; }
+    const om = L.match(/^([กขคง])[)\.\:\-]\s*(.*)$/);
+    if(om){ if(!cur) cur={q:'',ans:null}; const idx=map[om[1]]; opts[idx]=om[2]; continue; }
     const am = L.match(/^คำตอบ\s*[:：]\s*([กขคง1234])$/);
-    if(am){
-      if(!cur){ errors.push(`พบ "คำตอบ :" ก่อนเริ่มคำถามที่บรรทัด ${ln+1}`); break; }
-      const v = am[1];
-      cur.ans = /[1234]/.test(v) ? (parseInt(v,10)-1) : mapLetter[v];
-      continue;
-    }
-
-    // คำอธิบาย : (เก็บต่อบรรทัดได้จนกว่าจะเจอคำถามถัดไป)
-    const ex = L.match(/^คำอธิบาย\s*[:：]\s*(.*)$/);
-    if(ex){
-      if(!cur){ errors.push(`พบ "คำอธิบาย :" ก่อนเริ่มคำถามที่บรรทัด ${ln+1}`); break; }
-      expBuf.push(ex[1]); // เริ่มสะสม
-      // เก็บบรรทัดถัด ๆ ไปจนกว่าจะถึงคำถามใหม่
-      continue;
-    }
-
-    // บรรทัดทั่วไปที่ตามหลัง "คำอธิบาย :" ให้ถือเป็นคำอธิบายต่อ
-    if(cur && (cur.ans!=null || expBuf.length>0)){
-      expBuf.push(L);
-      continue;
-    }
-
-    // ถ้าไม่เข้าเงื่อนไขใด ๆ แจ้งเตือนฟอร์แมต
-    if(!cur){
-      errors.push(`รูปแบบไม่ถูกต้องที่บรรทัด ${ln+1}: "${raw}" (ควรขึ้นต้นด้วย "ข้อ 1." …)`);
-      break;
-    }
+    if(am){ if(!cur) cur={q:'',ans:null}; const v=am[1]; cur.ans = /[1234]/.test(v)?(parseInt(v,10)-1):map[v]; continue; }
+    const exm = L.match(/^คำอธิบาย\s*[:：]\s*(.*)$/);
+    if(exm){ if(!cur) cur={q:'',ans:null}; ex.push(exm[1]); continue; }
+    if(cur) ex.push(L);
   }
   push();
-
-  if(!errors.length && items.length!==10){
-    errors.push(`จำเป็นต้องมี 10 ข้อพอดี (ตอนนี้มี ${items.length} ข้อ)`);
+  // ถ้าไม่เจออะไรเลย → ใส่ตัวอย่าง 1 ข้อ
+  if(items.length===0){
+    items.push({
+      q:'ตัวอย่างคำถาม',
+      a:[{t:'ตัวเลือก ก',ok:true},{t:'ตัวเลือก ข'},{t:'ตัวเลือก ค'},{t:'ตัวเลือก ง'}],
+      ex:''
+    });
   }
-
-  if(errors.length) throw new Error(errors.join('\n'));
   return items;
 }
 
-function b64(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
-function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
+/* ================== GENERATE / DOWNLOAD / PREVIEW ================== */
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function generate(){
-  const status = document.getElementById('status');
-  status.textContent=''; status.className='';
-  try{
-    const title = document.getElementById('title').value || 'แบบทดลองสอบ';
-    const subtitle = document.getElementById('subtitle').value || '';
-    const logo = document.getElementById('logo').value || '';
-    const line = document.getElementById('line').value || '@openshetts';
-    const shop = document.getElementById('shop').value || 'https://www.yourshop.example';
+  const title=document.getElementById('title').value||'แบบทดลองสอบ';
+  const subtitle=document.getElementById('subtitle').value||'';
+  const logo=document.getElementById('logo').value||'';
+  const line=document.getElementById('line').value||'';
+  const shop=document.getElementById('shop').value||'';
+  const data=parseFlexible(document.getElementById('src').value);
 
-    const arr = parseThaiSource(document.getElementById('src').value);
-    const data64 = b64(arr);
+  const html=TEMPLATE
+    .replaceAll('__TITLE__', esc(title))
+    .replaceAll('__SUBTITLE__', esc(subtitle))
+    .replaceAll('__LOGO__', logo)
+    .replaceAll('__LINEOA__', esc(line))
+    .replaceAll('__SHOP__', shop)
+    .replace('__DATA__', JSON.stringify(data));
 
-    const html = TEMPLATE
-      .replaceAll('__TITLE__', esc(title))
-      .replaceAll('__SUBTITLE__', esc(subtitle))
-      .replaceAll('__LOGO__', logo)
-      .replaceAll('__LINEOA__', line)
-      .replaceAll('__SHOP__', shop)
-      .replace('__B64__', data64);
-
-    document.getElementById('out').value = html;
-    status.textContent = 'สร้างโค้ดสำเร็จ ✓  คุณสามารถกด "แสดงตัวอย่าง" หรือ "ดาวน์โหลด" ได้ทันที';
-    status.className = 'ok';
-  }catch(e){
-    document.getElementById('out').value = '';
-    const msg = 'สร้างไม่สำเร็จ กรุณาแก้ตามนี้:\n\n' + e.message +
-      '\n\nรูปแบบที่ถูกต้อง เช่น:\nข้อ 1. คำถาม\nก) ตัวเลือก ก\nข) ตัวเลือก ข\nค) ตัวเลือก ค\nง) ตัวเลือก ง\nคำตอบ : ก\nคำอธิบาย : อธิบาย…';
-    alert(msg);
-    const status = document.getElementById('status');
-    status.textContent = e.message.replace(/\n/g,'  • ');
-    status.className = 'err';
-  }
+  document.getElementById('out').value = html;
 }
-
 function downloadOut(){
-  const txt = document.getElementById('out').value;
-  if(!txt.trim()){ alert('กรุณากด "Generate โค้ด" ให้สำเร็จก่อน'); return; }
-  const blob = new Blob([txt], {type:'text/html;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'quiz.html';
+  const txt=document.getElementById('out').value.trim(); if(!txt){generate();}
+  const blob=new Blob([document.getElementById('out').value],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='quiz.html';
   document.body.appendChild(a); a.click(); a.remove();
 }
-
 function previewOut(){
-  const txt = document.getElementById('out').value;
-  if(!txt.trim()){ alert('กรุณากด "Generate โค้ด" ให้สำเร็จก่อน'); return; }
-  const blob = new Blob([txt], {type:'text/html;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  window.open(url, '_blank');
+  if(!document.getElementById('out').value.trim()) generate();
+  const blob=new Blob([document.getElementById('out').value],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob); window.open(url,'_blank');
 }
-
-/* เติมตัวอย่างตามรูปแบบภาษาไทยไว้ให้ก่อน */
-document.getElementById('src').value = SAMPLE;
 </script>
 </body>
 </html>
