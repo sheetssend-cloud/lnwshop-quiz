@@ -1,178 +1,838 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ทดลองสอบ | ร้านหนังสือ Open Sheets</title>
-<style>
-  :root{--p:#005c97;--p2:#363795;--ok:#198754;--bad:#dc3545;--muted:#6c757d;--text:#333}
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{font-family:"Sarabun",system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai",sans-serif;background:#f0f2f5;user-select:none;-webkit-user-select:none}
-  .wrap{max-width:800px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.08);overflow:hidden}
-  .header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:16px 20px;text-align:center;position:relative}
-  .brand{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
-  .logo{height:42px;width:auto;object-fit:contain;border-radius:8px;background:#fff10;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
-  h2{margin:4px 0 0}
-  .sub{margin:4px 0 0;opacity:.95}
-  .copyright{margin:8px 0 0;font-size:.95rem;opacity:.95}
-  .body{padding:20px}
-  .q{font-weight:700;line-height:1.6;margin-bottom:12px}
-  .answers{display:grid;gap:10px}
-  .opt{background:#f8f9fa;border:2px solid #ced4da;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;transition:.18s}
-  .opt:hover{background:#eef2f6;border-color:#0d6efd}
-  .opt.correct{background:#d1e7dd;border-color:var(--ok);color:#0f5132;font-weight:700}
-  .opt.wrong{background:#f8d7da;border-color:var(--bad);color:#842029}
-  .ex{background:#f8f9fa;border-left:5px solid #6c757d;padding:12px 14px;margin-top:14px;display:none}
-  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid #eee}
-  .btn{background:#0d6efd;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
-  .btn[disabled]{background:var(--muted);cursor:not-allowed}
-  .score{font-size:2.4rem;font-weight:800;color:var(--p);margin:6px 0 14px}
-  .result{text-align:center;display:none}
-  .success{background:#28a745}
-  .cta{margin:8px 0 16px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .btn-line{background:#06c755}
-  .btn-shop{background:#0d6efd}
-  /* กันลากภาพ/เลือกข้อความ */
-  img,svg{pointer-events:none}
-</style>
+  <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดลองสอบ 10 ข้อก่อนสั่งซื้อ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: "Sarabun", "Noto Sans Thai", "Leelawadee UI", Tahoma, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .lnwq-container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .lnwq-header { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px 30px; 
+            text-align: center; 
+            color: white;
+        }
+        
+        .lnwq-logo { 
+            width: 100px; 
+            height: 100px; 
+            border-radius: 50%; 
+            margin: 0 auto 20px;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .lnwq-logo img { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            object-fit: cover;
+        }
+        
+        .lnwq-logo-placeholder {
+            font-size: 40px;
+            color: white;
+        }
+        
+        .lnwq-title { 
+            font-size: 28px; 
+            font-weight: 600; 
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .lnwq-subtitle { 
+            font-size: 18px; 
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .lnwq-content { 
+            padding: 40px 30px; 
+        }
+        
+        .lnwq-question { 
+            margin-bottom: 30px; 
+            padding: 25px; 
+            background: linear-gradient(145deg, #f8f9ff 0%, #f0f4ff 100%); 
+            border-radius: 20px;
+            border-left: 6px solid #4facfe;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.1);
+        }
+        
+        .lnwq-question h3 { 
+            font-size: 20px; 
+            margin-bottom: 20px; 
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        .lnwq-choices { 
+            display: grid; 
+            gap: 12px; 
+        }
+        
+        .lnwq-choice { 
+            padding: 16px 20px; 
+            background: white; 
+            border: 2px solid #e8ecf4; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 400;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lnwq-choice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 172, 254, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .lnwq-choice:hover::before {
+            left: 100%;
+        }
+        
+        .lnwq-choice:hover { 
+            border-color: #4facfe; 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.2);
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+        }
+        
+        .lnwq-choice.selected { 
+            background: linear-gradient(145deg, #4facfe 0%, #00f2fe 100%); 
+            color: white; 
+            border-color: #4facfe;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+        
+        .lnwq-choice.correct { 
+            background: linear-gradient(145deg, #28a745 0%, #20c997 100%); 
+            border-color: #28a745; 
+            color: white;
+            animation: correctPulse 0.6s ease-out;
+        }
+        
+        .lnwq-choice.wrong { 
+            background: linear-gradient(145deg, #dc3545 0%, #fd7e14 100%); 
+            border-color: #dc3545; 
+            color: white;
+            animation: wrongShake 0.6s ease-out;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .lnwq-explanation { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: linear-gradient(145deg, #e8f4fd 0%, #f0f8ff 100%); 
+            border-radius: 15px; 
+            border-left: 4px solid #4facfe;
+            display: none;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .lnwq-explanation.show { 
+            display: block; 
+            animation: slideDown 0.4s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .lnwq-explanation strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .lnwq-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 40px; 
+            padding-top: 30px; 
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .lnwq-btn { 
+            padding: 14px 28px; 
+            border: none; 
+            border-radius: 25px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lnwq-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .lnwq-btn:hover::before {
+            left: 100%;
+        }
+        
+        .lnwq-btn-primary { 
+            background: linear-gradient(145deg, #4facfe 0%, #00f2fe 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .lnwq-btn-primary:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+        
+        .lnwq-btn:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            transform: none !important;
+        }
+        
+        .lnwq-progress { 
+            font-size: 16px; 
+            color: #666;
+            font-weight: 500;
+            padding: 10px 20px;
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 20px;
+        }
+        
+        .lnwq-result { 
+            text-align: center; 
+            padding: 50px 30px;
+        }
+        
+        .lnwq-score { 
+            font-size: 64px; 
+            font-weight: 700; 
+            background: linear-gradient(145deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .lnwq-result h3 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .lnwq-result p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .lnwq-footer { 
+            background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%); 
+            padding: 30px; 
+            text-align: center; 
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .lnwq-footer p {
+            font-size: 18px;
+            color: #495057;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .lnwq-contact { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            flex-wrap: wrap;
+        }
+        
+        .lnwq-contact a { 
+            padding: 12px 24px; 
+            background: linear-gradient(145deg, #28a745 0%, #20c997 100%); 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 25px; 
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .lnwq-contact a:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        .hidden { 
+            display: none; 
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .lnwq-container {
+                border-radius: 15px;
+            }
+            
+            .lnwq-header {
+                padding: 30px 20px;
+            }
+            
+            .lnwq-title {
+                font-size: 24px;
+            }
+            
+            .lnwq-subtitle {
+                font-size: 16px;
+            }
+            
+            .lnwq-content {
+                padding: 30px 20px;
+            }
+            
+            .lnwq-question {
+                padding: 20px;
+                margin-bottom: 25px;
+            }
+            
+            .lnwq-question h3 {
+                font-size: 18px;
+            }
+            
+            .lnwq-choice {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
+            
+            .lnwq-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .lnwq-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .lnwq-contact {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .lnwq-contact a {
+                width: 200px;
+            }
+        }
+    </style>
 </head>
-<body oncontextmenu="return false">
-<div class="wrap">
-  <div class="header">
-    <div class="brand">
-      <!-- ใส่โลโก้ร้านตรงนี้ -->
-      <img id="logo" class="logo" alt="Open Sheets Logo">
-      <div>
-        <h2>แบบทดลองสอบ: ตำแหน่ง นักวิชาการพาณิชย์</h2>
-        <div class="sub">กรมเจรจาการค้าระหว่างประเทศ</div>
-        <div class="copyright">ร้านหนังสือ <b>Open Sheets</b> — จัดจำหน่ายหนังสือแนวข้อสอบ | LINE: <b>@openshetts</b></div>
-      </div>
+<body>
+    <div class="lnwq-container">
+        <div class="lnwq-header">
+            <div class="lnwq-logo">
+                <img id="logo-img" src="" alt="Logo" style="display: none;">
+                <div id="logo-placeholder" class="lnwq-logo-placeholder">📚</div>
+            </div>
+            <h2 class="lnwq-title">นักวิชาการขนส่ง</h2>
+            <p class="lnwq-subtitle">กรมท่าอากาศยาน</p>
+        </div>
+
+        <div id="quiz-content" class="lnwq-content">
+            <div id="question-container"></div>
+            <div class="lnwq-nav">
+                <button id="prev-btn" class="lnwq-btn lnwq-btn-primary" onclick="prevQuestion()" disabled>← ก่อนหน้า</button>
+                <div class="lnwq-progress">
+                    ข้อ <span id="current-q">1</span> จาก <span id="total-q">10</span>
+                </div>
+                <button id="next-btn" class="lnwq-btn lnwq-btn-primary" onclick="nextQuestion()">ถัดไป →</button>
+            </div>
+        </div>
+
+        <div id="result-content" class="lnwq-content hidden">
+            <div class="lnwq-result">
+                <div class="lnwq-score" id="final-score">0/10</div>
+                <h3>ผลการทำแบบทดสอบ</h3>
+                <p id="score-message">คุณทำได้ดีมาก!</p>
+                <button class="lnwq-btn lnwq-btn-primary" onclick="restartQuiz()">🔄 ทำใหม่อีกครั้ง</button>
+            </div>
+        </div>
+
+        <div class="lnwq-footer">
+            <p>ต้องการแบบทดสอบเพิ่มเติม?</p>
+            <div class="lnwq-contact">
+                <a id="line-contact" href="#" target="_blank">สั่งซื้อ แบบเล่ม - ไฟล์ ทางไลน์</a>
+                <a id="shop-link" href="#" target="_blank">สั่งซื้อสินค้าผ่านตะกร้าสินค้า</a>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="body" id="panel">
-    <div id="q" class="q">ข้อ 1. …</div>
-    <div id="answers" class="answers"></div>
-    <div id="ex" class="ex"><b>คำอธิบาย:</b> <span id="ex-text"></span></div>
-    <div class="nav">
-      <span id="progress">ข้อ 1 / 10</span>
-      <button id="next" class="btn" disabled>ข้อต่อไป</button>
-    </div>
-  </div>
-
-  <div class="body result" id="result">
-    <h3>ผลการทดสอบ</h3>
-    <div class="score" id="score">0 / 10</div>
-    <p>หากสนใจสั่งซื้อไฟล์/เล่ม กดปุ่มด้านล่างได้เลย</p>
-    <div class="cta">
-      <a id="btnLine" class="btn btn-line" target="_blank" rel="noopener">สั่งซื้อทางไลน์</a>
-      <a id="btnShop" class="btn btn-shop" target="_blank" rel="noopener">สั่งซื้อที่หน้าร้าน</a>
-    </div>
-    <button id="restart" class="btn success">ทำแบบทดสอบใหม่</button>
-  </div>
-</div>
-
-<script>
-/* ===== ตั้งค่าโลโก้/ลิงก์/ข้อความ ===== */
-const LOGO_URL   = "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";   // << ใส่ลิงก์รูปโลโก้ร้าน (PNG/JPG/SVG)
-const LINE_OA_ID = "@openshetts";                           // ไอดี OA
-const SHOP_URL   = "https://www.opensheetsstore.com/product/376/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%AD%E0%B8%9A-%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%A3%E0%B8%B2%E0%B8%8A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9B%E0%B8%8F%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3-%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B8%81-%E0%B8%9E-%E0%B8%A3-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95%E0%B8%A5%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%9B%E0%B8%B5-2568-%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B2";             // ลิงก์หน้าร้าน/หน้าสินค้า
-const lineMsg    = "https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url" + location.href;
-
-/* ===== ข้อสอบ (ตัวอย่าง 10 ข้อจากเดิม) ===== */
-const data = [
-  {q:"ข้อใดคือหลักการที่สำคัญที่สุดขององค์การการค้าโลก (WTO) ที่ส่งเสริมการแข่งขันอย่างเป็นธรรม?",
-   a:["หลักการไม่เลือกปฏิบัติ (Non-Discrimination)","หลักการค้าเสรี (Free Trade)","หลักการโปร่งใส (Transparency)","มาตรการปกป้อง (Safeguard)"],
-   c:0, ex:"รวม MFN + National Treatment ให้แข่งขันเท่าเทียม"},
-  {q:"ความตกลงใดของ WTO เกี่ยวกับทรัพย์สินทางปัญญา?",
-   a:["GATT","GATS","TRIPS","TBT"], c:2, ex:"TRIPS = Trade-Related Aspects of IPR"},
-  {q:"ข้อใดไม่ใช่เสาหลักของ AEC Blueprint?",
-   a:["ตลาดและฐานการผลิตเดียว","เพิ่มขีดความสามารถการแข่งขัน","รวมกับเศรษฐกิจโลก","กองทุนการเงินอาเซียน"], c:3, ex:"AEC 2025 มี 4 เสา ไม่รวมกองทุน"},
-  {q:"กฎว่าด้วยแหล่งกำเนิดสินค้า (Rules of Origin) สำคัญเพราะ?",
-   a:["กำหนดภาษีแน่นอนทุกชนิด","ยืนยันว่าสินค้าที่ได้สิทธิเป็นของภาคีจริง","ควบคุม SPS","จำกัดโควตา"], c:1, ex:"กันสวมสิทธิ ต้องพิสูจน์สัญชาติสินค้า"},
-  {q:'"Single Undertaking" หมายถึง?',
-   a:["รับบางข้อตกลงได้","ต้องรับทั้งชุดหรือปฏิเสธทั้งชุด","เจรจาทีละหัวข้อ","พัฒนาได้ยกเว้นส่วนใหญ่"], c:1, ex:'“Nothing is agreed until everything is agreed.”'},
-  {q:"หน่วยงานไทยที่ไต่สวน Anti-Dumping?",
-   a:["กรมศุลกากร","กรมเจรจาการค้าระหว่างประเทศ","กรมการค้าต่างประเทศ","สคก.การแข่งขันทางการค้า"], c:2, ex:"DFT ดูแล AD/CVD/Safeguards"},
-  {q:"ความต่างเด่น RCEP vs CPTPP?",
-   a:["RCEP มาตรฐานแรงงานสูงกว่า","RCEP ริเริ่มโดยจีน, CPTPP โดยสหรัฐ","RCEP มีสมาชิก/ขนาดเศรษฐกิจรวมใหญ่กว่า","CPTPP เน้นสินค้า RCEP เน้นบริการ"], c:2, ex:"RCEP 15 ประเทศ ใหญ่สุดเมื่อวัด GDP+ประชากร"},
-  {q:"BATNA คือ?",
-   a:["ข้อเสนอที่อีกฝ่ายดีที่สุด","จุดยืนสุดท้าย","ทางเลือกดีที่สุดถ้าเจรจาล้มเหลว","ข้อตกลงเบื้องต้น"], c:2, ex:"BATNA แข็งแรง = อำนาจต่อรองสูง"},
-  {q:"CBAM ระยะแรก EU กระทบสินค้ากลุ่มใดมาก?",
-   a:["เกษตร/อาหาร","เหล็ก อะลูมิเนียม ปุ๋ย (ฯลฯ)","อิเล็กทรอนิกส์/ยานยนต์","สิ่งทอ"], c:1, ex:"กลุ่มปล่อยคาร์บอนสูง เช่น เหล็ก ปุ๋ย ซีเมนต์"},
-  {q:"National Single Window (NSW) ของไทยคือ?",
-   a:["พอร์ทัล BOI","ศูนย์กลางข้อมูลนำเข้า-ส่งออก/โลจิสติกส์จุดเดียว","คลังกฎหมายการค้า","แพลตฟอร์มเจรจาการค้ารัฐ"], c:1, ex:"ลดซ้ำซ้อน เอกสารผ่านช่องทางเดียว"}
+    <script>
+        const LOGO_URL = "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";
+        const LINE_OA_ID = "@opensheets";
+        const SHOP_URL = "https://www.opensheetsstore.com/product/255/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%AD%E0%B8%9A-%E0%B8%9E%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%AA%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%AA%E0%B8%B2%E0%B8%A3-%E0%B8%81%E0%B8%A3%E0%B8%A1%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B9%88%E0%B8%B2-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95%E0%B8%A5%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%9B%E0%B8%B5-2568";
+        
+        // Quiz data will be embedded here directly as JavaScript (no Base64)
+        const quizData = [
+    {
+        "q": "กรมท่าอากาศยานอยู่ในสังกัดกระทรวงใด",
+        "a": [
+            {
+                "t": "กระทรวงกลาโหม",
+                "ok": false
+            },
+            {
+                "t": "กระทรวงคมนาคม",
+                "ok": true
+            },
+            {
+                "t": "กระทรวงมหาดไทย",
+                "ok": false
+            },
+            {
+                "t": "กระทรวงดิจิทัลเพื่อเศรษฐกิจและสังคม",
+                "ok": false
+            }
+        ],
+        "ex": "กรมท่าอากาศยานเป็นหน่วยงานระดับกรมในสังกัดกระทรวงคมนาคม มีหน้าที่ในการพัฒนาโครงข่ายและบริหารท่าอากาศยานในภูมิภาค"
+    },
+    {
+        "q": "พระราชบัญญัติการเดินอากาศฉบับแรกของประเทศไทยมีผลบังคับใช้ในปี พ.ศ. ใด",
+        "a": [
+            {
+                "t": "2488",
+                "ok": false
+            },
+            {
+                "t": "2497",
+                "ok": true
+            },
+            {
+                "t": "2505",
+                "ok": false
+            },
+            {
+                "t": "2512",
+                "ok": false
+            }
+        ],
+        "ex": "พระราชบัญญัติการเดินอากาศ พ.ศ. 2497 เป็นกฎหมายหลักที่ใช้ควบคุมและกำกับดูแลกิจการการบินของประเทศไทย"
+    },
+    {
+        "q": "องค์กรการบินพลเรือนระหว่างประเทศมีชื่อย่อว่าอะไร",
+        "a": [
+            {
+                "t": "IATA",
+                "ok": false
+            },
+            {
+                "t": "ICAO",
+                "ok": true
+            },
+            {
+                "t": "FAA",
+                "ok": false
+            },
+            {
+                "t": "EASA",
+                "ok": false
+            }
+        ],
+        "ex": "ICAO (International Civil Aviation Organization) เป็นทบวงการชำนัญพิเศษของสหประชาชาติที่จัดตั้งขึ้นเพื่อวางระเบียบข้อบังคับสำหรับการบินพลเรือนระหว่างประเทศ"
+    },
+    {
+        "q": "Annex ใดของ ICAO ที่เกี่ยวข้องกับมาตรฐานสนามบิน (Aerodromes)",
+        "a": [
+            {
+                "t": "Annex 1",
+                "ok": false
+            },
+            {
+                "t": "Annex 6",
+                "ok": false
+            },
+            {
+                "t": "Annex 14",
+                "ok": true
+            },
+            {
+                "t": "Annex 17",
+                "ok": false
+            }
+        ],
+        "ex": "Annex 14 Aerodromes เป็นภาคผนวกของอนุสัญญาว่าด้วยการบินพลเรือนระหว่างประเทศที่กำหนดมาตรฐานและการปฏิบัติที่แนะนำสำหรับสนามบิน"
+    },
+    {
+        "q": "หน่วยงานใดมีหน้าที่รับผิดชอบในการควบคุมการจราจรทางอากาศในประเทศไทย",
+        "a": [
+            {
+                "t": "กรมท่าอากาศยาน",
+                "ok": false
+            },
+            {
+                "t": "บริษัท ท่าอากาศยานไทย จำกัด (มหาชน)",
+                "ok": false
+            },
+            {
+                "t": "บริษัท วิทยุการบินแห่งประเทศไทย จำกัด",
+                "ok": true
+            },
+            {
+                "t": "สำนักงานการบินพลเรือนแห่งประเทศไทย",
+                "ok": false
+            }
+        ],
+        "ex": "บริษัท วิทยุการบินแห่งประเทศไทย จำกัด (บวท.) เป็นหน่วยงานที่ให้บริการควบคุมการจราจรทางอากาศทั่วประเทศ"
+    },
+    {
+        "q": "\"เขตการบิน\" (Airside) หมายถึงข้อใด",
+        "a": [
+            {
+                "t": "พื้นที่ทั้งหมดภายในรั้วของสนามบิน",
+                "ok": false
+            },
+            {
+                "t": "พื้นที่สำหรับผู้โดยสารรอขึ้นเครื่อง",
+                "ok": false
+            },
+            {
+                "t": "พื้นที่เคลื่อนไหวของสนามบิน ทางวิ่ง ทางขับ และลานจอดอากาศยาน",
+                "ok": true
+            },
+            {
+                "t": "อาคารที่พักผู้โดยสารและพื้นที่สาธารณะ",
+                "ok": false
+            }
+        ],
+        "ex": "เขตการบิน (Airside) คือพื้นที่ที่มีการจำกัดการเข้าถึง สำหรับอากาศยาน ผู้โดยสารที่ผ่านการตรวจ และเจ้าหน้าที่ที่ได้รับอนุญาตเท่านั้น"
+    },
+    {
+        "q": "ข้อใดคือวัตถุประสงค์หลักของแผนรักษาความปลอดภัยการบินพลเรือนแห่งชาติ",
+        "a": [
+            {
+                "t": "เพื่อส่งเสริมการท่องเที่ยวทางอากาศ",
+                "ok": false
+            },
+            {
+                "t": "เพื่อป้องกันการกระทำอันเป็นการแทรกแซงโดยมิชอบด้วยกฎหมาย",
+                "ok": true
+            },
+            {
+                "t": "เพื่อเพิ่มรายได้ให้กับท่าอากาศยาน",
+                "ok": false
+            },
+            {
+                "t": "เพื่อลดขั้นตอนการตรวจค้นผู้โดยสาร",
+                "ok": false
+            }
+        ],
+        "ex": "แผนรักษาความปลอดภัยฯ มีเป้าหมายหลักในการปกป้องการบินพลเรือนจากการก่อการร้ายและการกระทำที่ผิดกฎหมายอื่นๆ"
+    },
+    {
+        "q": "ตามกฎระเบียบสากล ของเหลว เจล สเปรย์ ที่จะนำขึ้นห้องโดยสารอากาศยานต้องมีปริมาตรบรรจุภัณฑ์ละไม่เกินเท่าใด",
+        "a": [
+            {
+                "t": "50 มิลลิลิตร",
+                "ok": false
+            },
+            {
+                "t": "100 มิลลิลิตร",
+                "ok": true
+            },
+            {
+                "t": "150 มิลลิลิตร",
+                "ok": false
+            },
+            {
+                "t": "200 มิลลิลิตร",
+                "ok": false
+            }
+        ],
+        "ex": "เป็นมาตรการรักษาความปลอดภัยสากลเพื่อป้องกันการนำวัตถุอันตรายในรูปแบบของเหลวขึ้นไปบนอากาศยาน"
+    },
+    {
+        "q": "Runway Threshold หมายถึงส่วนใดของทางวิ่ง",
+        "a": [
+            {
+                "t": "จุดเริ่มต้นของทางวิ่งที่สามารถใช้ร่อนลงได้",
+                "ok": true
+            },
+            {
+                "t": "จุดสิ้นสุดของทางวิ่ง",
+                "ok": false
+            },
+            {
+                "t": "บริเวณกึ่งกลางของทางวิ่ง",
+                "ok": false
+            },
+            {
+                "t": "บริเวณไหล่ทางของทางวิ่ง",
+                "ok": false
+            }
+        ],
+        "ex": "เป็นจุดอ้างอิงสำคัญสำหรับนักบินในการนำเครื่องบินร่อนลงจอดบนทางวิ่งได้อย่างปลอดภัย"
+    },
+    {
+        "q": "ระบบ PAPI (Precision Approach Path Indicator) ใช้สำหรับอะไร",
+        "a": [
+            {
+                "t": "บอกทิศทางลม",
+                "ok": false
+            },
+            {
+                "t": "บอกความเร็วลม",
+                "ok": false
+            },
+            {
+                "t": "บอกมุมร่อนของอากาศยาน",
+                "ok": true
+            },
+            {
+                "t": "บอกตำแหน่งของอากาศยานบนทางขับ",
+                "ok": false
+            }
+        ],
+        "ex": "ระบบไฟ PAPI ช่วยให้นักบินทราบว่ากำลังร่อนลงในมุมที่ถูกต้องหรือไม่ (สูงไป, ต่ำไป, หรือพอดี) ผ่านการแสดงสีของดวงไฟ"
+    }
 ];
+        
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let showingResults = false;
 
-const q = document.getElementById('q');
-const list = document.getElementById('answers');
-const ex = document.getElementById('ex');
-const exText = document.getElementById('ex-text');
-const prog = document.getElementById('progress');
-const next = document.getElementById('next');
-const panel = document.getElementById('panel');
-const result = document.getElementById('result');
-const scoreEl = document.getElementById('score');
-const restart = document.getElementById('restart');
-const logo = document.getElementById('logo');
-const btnLine = document.getElementById('btnLine');
-const btnShop = document.getElementById('btnShop');
+        function init() {
+            try {
+                // Setup logo
+                if (LOGO_URL) {
+                    document.getElementById('logo-img').src = LOGO_URL;
+                    document.getElementById('logo-img').style.display = 'block';
+                    document.getElementById('logo-placeholder').style.display = 'none';
+                }
+                
+                // Setup contact links
+                document.getElementById('line-contact').href = `https://line.me/R/ti/p/${LINE_OA_ID}`;
+                document.getElementById('shop-link').href = SHOP_URL;
+                
+                // Initialize quiz
+                if (quizData.length > 0) {
+                    document.getElementById('total-q').textContent = quizData.length;
+                    userAnswers = new Array(quizData.length).fill(null);
+                    showQuestion();
+                } else {
+                    document.getElementById('question-container').innerHTML = '<p style="text-align: center; color: #dc3545; font-size: 18px;">⚠️ ไม่มีข้อมูลแบบทดสอบ</p>';
+                }
+                
+            } catch (e) {
+                console.error('Error initializing quiz:', e);
+                document.getElementById('question-container').innerHTML = '<p style="text-align: center; color: #dc3545; font-size: 18px;">⚠️ เกิดข้อผิดพลาดในการโหลดข้อมูลแบบทดสอบ</p>';
+            }
+        }
 
-logo.src = LOGO_URL || "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";
-btnLine.href = 'https://line.me/R/ti/p/@304czfla?ts=02101411&oat_content=url' + encodeURIComponent(LINE_OA_ID) + '/?' + encodeURIComponent(lineMsg);
-btnShop.href = SHOP_URL;
+        function showQuestion() {
+            if (currentQuestion >= quizData.length) {
+                showResults();
+                return;
+            }
 
-let i=0,score=0,locked=false;
+            const q = quizData[currentQuestion];
+            const container = document.getElementById('question-container');
+            
+            let html = `
+                <div class="lnwq-question">
+                    <h3>ข้อ ${currentQuestion + 1}. ${q.q}</h3>
+                    <div class="lnwq-choices">
+            `;
+            
+            q.a.forEach((choice, index) => {
+                const letter = ['ก', 'ข', 'ค', 'ง'][index];
+                const selected = userAnswers[currentQuestion] === index ? 'selected' : '';
+                html += `
+                    <div class="lnwq-choice ${selected}" onclick="selectAnswer(${index})">
+                        <strong>${letter}.</strong>&nbsp;&nbsp;${choice.t}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                    <div class="lnwq-explanation" id="explanation-${currentQuestion}">
+                        <strong>💡 คำอธิบาย:</strong> ${q.ex}
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            // Update navigation
+            document.getElementById('current-q').textContent = currentQuestion + 1;
+            document.getElementById('prev-btn').disabled = currentQuestion === 0;
+            document.getElementById('next-btn').textContent = currentQuestion === quizData.length - 1 ? '🏁 ดูผลลัพธ์' : 'ถัดไป →';
+        }
 
-function render(){
-  locked=false; next.disabled=true; ex.style.display="none"; list.innerHTML="";
-  q.textContent = `ข้อ ${i+1}. ${data[i].q}`;
-  prog.textContent = `ข้อ ${i+1} / ${data.length}`;
-  data[i].a.forEach((t,k)=>{
-    const b=document.createElement('button');
-    b.className='opt';
-    b.type='button';
-    b.textContent = "กขคง"[k] + ". " + t;
-    b.onclick=()=>choose(b,k===data[i].c);
-    list.appendChild(b);
-  });
-}
-function choose(button,ok){
-  if(locked) return; locked=true;
-  [...list.children].forEach((b,idx)=>{
-    b.disabled=true;
-    b.classList.add(idx===data[i].c ? 'correct' : 'wrong');
-  });
-  if(ok) score++;
-  exText.textContent = data[i].ex || "";
-  ex.style.display="block";
-  next.textContent = (i===data.length-1) ? "ดูผลคะแนน" : "ข้อต่อไป";
-  next.disabled=false;
-}
-function goNext(){
-  if(i < data.length-1){ i++; render(); }
-  else{ panel.style.display='none'; result.style.display='block'; scoreEl.textContent=`${score} / ${data.length}`; }
-}
-function reset(){ i=0; score=0; panel.style.display='block'; result.style.display='none'; render(); }
+        function selectAnswer(index) {
+            userAnswers[currentQuestion] = index;
+            
+            // Update visual selection
+            const choices = document.querySelectorAll('.lnwq-choice');
+            choices.forEach((choice, i) => {
+                choice.classList.remove('selected', 'correct', 'wrong');
+                if (i === index) {
+                    choice.classList.add('selected');
+                }
+            });
+            
+            // Show explanation after a short delay
+            setTimeout(() => {
+                document.getElementById(`explanation-${currentQuestion}`).classList.add('show');
+                
+                // Show correct/wrong colors
+                const q = quizData[currentQuestion];
+                choices.forEach((choice, i) => {
+                    if (q.a[i].ok) {
+                        choice.classList.add('correct');
+                    } else if (i === index && !q.a[i].ok) {
+                        choice.classList.add('wrong');
+                    }
+                });
+            }, 300);
+        }
 
-next.addEventListener('click',goNext);
-restart.addEventListener('click',reset);
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
 
-/* ===== ตัวกันก๊อปพื้นฐาน (กันง่าย ๆ เท่านั้น) ===== */
-document.addEventListener('keydown',function(e){
-  const k=(e.ctrlKey||e.metaKey) && ['s','S','u','U','p','P','c','C'].includes(e.key);
-  const fkeys=[123]; // F12
-  if(k || fkeys.includes(e.keyCode)){ e.preventDefault(); e.stopPropagation(); }
-},true);
-document.addEventListener('dragstart',e=>e.preventDefault());
-document.addEventListener('copy',e=>e.preventDefault());
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
 
-render();
-</script>
-</body>
+        function showResults() {
+            let correct = 0;
+            userAnswers.forEach((answer, i) => {
+                if (answer !== null && quizData[i].a[answer].ok) {
+                    correct++;
+                }
+            });
+            
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('result-content').classList.remove('hidden');
+            document.getElementById('final-score').textContent = `${correct}/${quizData.length}`;
+            
+            let message = '';
+            const percentage = (correct / quizData.length) * 100;
+            if (percentage >= 90) {
+                message = '🎉 ยอดเยี่ยมมาก! คุณมีความรู้ในเรื่องนี้เป็นอย่างดี';
+            } else if (percentage >= 80) {
+                message = '👏 ดีเยี่ยม! คุณมีความเข้าใจที่ดีมาก';
+            } else if (percentage >= 70) {
+                message = '👍 ดีมาก! คุณมีพื้นฐานความรู้ที่ดี';
+            } else if (percentage >= 60) {
+                message = '😊 ดี! ควรศึกษาเพิ่มเติมในบางหัวข้อ';
+            } else if (percentage >= 50) {
+                message = '🤔 พอใช้ ควรทบทวนและศึกษาเพิ่มเติม';
+            } else {
+                message = '📚 ควรศึกษาเพิ่มเติม เพื่อเพิ่มพูนความรู้';
+            }
+            
+            document.getElementById('score-message').textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(quizData.length).fill(null);
+            document.getElementById('quiz-content').classList.remove('hidden');
+            document.getElementById('result-content').classList.add('hidden');
+            showQuestion();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+<script src="https://public-frontend-cos.metadl.com/commonfile/appPlugins-prod-1757257819217.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script></body>
 </html>
-
-
-
-
