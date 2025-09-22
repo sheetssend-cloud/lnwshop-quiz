@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดลองสอบ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: "Sarabun", "Noto Sans Thai", "Leelawadee UI", Tahoma, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .lnwq-container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .lnwq-header { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px 30px; 
+            text-align: center; 
+            color: white;
+        }
+        
+        .lnwq-logo { 
+            width: 100px; 
+            height: 100px; 
+            border-radius: 50%; 
+            margin: 0 auto 20px;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .lnwq-logo img { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            object-fit: cover;
+        }
+        
+        .lnwq-logo-placeholder {
+            font-size: 40px;
+            color: white;
+        }
+        
+        .lnwq-title { 
+            font-size: 28px; 
+            font-weight: 600; 
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .lnwq-subtitle { 
+            font-size: 18px; 
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .lnwq-content { 
+            padding: 40px 30px; 
+        }
+        
+        .lnwq-question { 
+            margin-bottom: 30px; 
+            padding: 25px; 
+            background: linear-gradient(145deg, #f8f9ff 0%, #f0f4ff 100%); 
+            border-radius: 20px;
+            border-left: 6px solid #4facfe;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.1);
+        }
+        
+        .lnwq-question h3 { 
+            font-size: 20px; 
+            margin-bottom: 20px; 
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        .lnwq-choices { 
+            display: grid; 
+            gap: 12px; 
+        }
+        
+        .lnwq-choice { 
+            padding: 16px 20px; 
+            background: white; 
+            border: 2px solid #e8ecf4; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 400;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lnwq-choice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 172, 254, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .lnwq-choice:hover::before {
+            left: 100%;
+        }
+        
+        .lnwq-choice:hover { 
+            border-color: #4facfe; 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.2);
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+        }
+        
+        .lnwq-choice.selected { 
+            background: linear-gradient(145deg, #4facfe 0%, #00f2fe 100%); 
+            color: white; 
+            border-color: #4facfe;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+        
+        .lnwq-choice.correct { 
+            background: linear-gradient(145deg, #28a745 0%, #20c997 100%); 
+            border-color: #28a745; 
+            color: white;
+            animation: correctPulse 0.6s ease-out;
+        }
+        
+        .lnwq-choice.wrong { 
+            background: linear-gradient(145deg, #dc3545 0%, #fd7e14 100%); 
+            border-color: #dc3545; 
+            color: white;
+            animation: wrongShake 0.6s ease-out;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .lnwq-explanation { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: linear-gradient(145deg, #e8f4fd 0%, #f0f8ff 100%); 
+            border-radius: 15px; 
+            border-left: 4px solid #4facfe;
+            display: none;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .lnwq-explanation.show { 
+            display: block; 
+            animation: slideDown 0.4s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .lnwq-explanation strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .lnwq-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 40px; 
+            padding-top: 30px; 
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .lnwq-btn { 
+            padding: 14px 28px; 
+            border: none; 
+            border-radius: 25px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lnwq-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .lnwq-btn:hover::before {
+            left: 100%;
+        }
+        
+        .lnwq-btn-primary { 
+            background: linear-gradient(145deg, #4facfe 0%, #00f2fe 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .lnwq-btn-primary:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+        
+        .lnwq-btn:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            transform: none !important;
+        }
+        
+        .lnwq-progress { 
+            font-size: 16px; 
+            color: #666;
+            font-weight: 500;
+            padding: 10px 20px;
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 20px;
+        }
+        
+        .lnwq-result { 
+            text-align: center; 
+            padding: 50px 30px;
+        }
+        
+        .lnwq-score { 
+            font-size: 64px; 
+            font-weight: 700; 
+            background: linear-gradient(145deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .lnwq-result h3 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .lnwq-result p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .lnwq-footer { 
+            background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%); 
+            padding: 30px; 
+            text-align: center; 
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .lnwq-footer p {
+            font-size: 18px;
+            color: #495057;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .lnwq-contact { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            flex-wrap: wrap;
+        }
+        
+        .lnwq-contact a { 
+            padding: 12px 24px; 
+            background: linear-gradient(145deg, #28a745 0%, #20c997 100%); 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 25px; 
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .lnwq-contact a:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        .hidden { 
+            display: none; 
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .lnwq-container {
+                border-radius: 15px;
+            }
+            
+            .lnwq-header {
+                padding: 30px 20px;
+            }
+            
+            .lnwq-title {
+                font-size: 24px;
+            }
+            
+            .lnwq-subtitle {
+                font-size: 16px;
+            }
+            
+            .lnwq-content {
+                padding: 30px 20px;
+            }
+            
+            .lnwq-question {
+                padding: 20px;
+                margin-bottom: 25px;
+            }
+            
+            .lnwq-question h3 {
+                font-size: 18px;
+            }
+            
+            .lnwq-choice {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
+            
+            .lnwq-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .lnwq-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .lnwq-contact {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .lnwq-contact a {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lnwq-container">
+        <div class="lnwq-header">
+            <div class="lnwq-logo">
+                <img id="logo-img" src="" alt="Logo" style="display: none;">
+                <div id="logo-placeholder" class="lnwq-logo-placeholder">📚</div>
+            </div>
+            <h2 class="lnwq-title">แบบทดลองสอบ</h2>
+            <p class="lnwq-subtitle">เจ้าพนักงานพัฒนาสังคม</p>
+        </div>
+
+        <div id="quiz-content" class="lnwq-content">
+            <div id="question-container"></div>
+            <div class="lnwq-nav">
+                <button id="prev-btn" class="lnwq-btn lnwq-btn-primary" onclick="prevQuestion()" disabled>← ก่อนหน้า</button>
+                <div class="lnwq-progress">
+                    ข้อ <span id="current-q">1</span> จาก <span id="total-q">7</span>
+                </div>
+                <button id="next-btn" class="lnwq-btn lnwq-btn-primary" onclick="nextQuestion()">ถัดไป →</button>
+            </div>
+        </div>
+
+        <div id="result-content" class="lnwq-content hidden">
+            <div class="lnwq-result">
+                <div class="lnwq-score" id="final-score">0/10</div>
+                <h3>ผลการทำแบบทดสอบ</h3>
+                <p id="score-message">คุณทำได้ดีมาก!</p>
+                <button class="lnwq-btn lnwq-btn-primary" onclick="restartQuiz()">🔄 ทำใหม่อีกครั้ง</button>
+            </div>
+        </div>
+
+        <div class="lnwq-footer">
+            <p>ต้องการแบบทดสอบเพิ่มเติม?</p>
+            <div class="lnwq-contact">
+                <a id="line-contact" href="#" target="_blank">📱 ติดต่อ LINE OA</a>
+                <a id="shop-link" href="#" target="_blank">🛒 เยี่ยมชมร้านค้า</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LOGO_URL = "https://img5.pic.in.th/file/secure-sv1/LOGO-Open-Sheets.jpg";
+        const LINE_OA_ID = "@opensheets";
+        const SHOP_URL = "https://www.opensheetsstore.com/product/255/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%AD%E0%B8%9A-%E0%B8%9E%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%AA%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%AA%E0%B8%B2%E0%B8%A3-%E0%B8%81%E0%B8%A3%E0%B8%A1%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B9%88%E0%B8%B2-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%94%E0%B8%95%E0%B8%A5%E0%B9%88%E0%B8%B2%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%9B%E0%B8%B5-2568";
+        
+        // Quiz data will be embedded here directly as JavaScript (no Base64)
+        const quizData = [
+    {
+        "q": "กรมกิจการสตรีและสถาบันครอบครัว (สค.) สังกัดกระทรวงใด",
+        "a": [
+            {
+                "t": "กระทรวงสาธารณสุข",
+                "ok": false
+            },
+            {
+                "t": "กระทรวงศึกษาธิการ",
+                "ok": false
+            },
+            {
+                "t": "กระทรวงการพัฒนาสังคมและความมั่นคงของมนุษย์",
+                "ok": true
+            },
+            {
+                "t": "สำนักนายกรัฐมนตรี",
+                "ok": false
+            }
+        ],
+        "ex": "กรมกิจการสตรีและสถาบันครอบครัว เป็นหน่วยงานระดับกรม สังกัดกระทรวงการพัฒนาสังคมและความมั่นคงของมนุษย์ (พม.)"
+    },
+    {
+        "q": "ข้อใดไม่ใช่วิสัยทัศน์ (Vision) ของกรมกิจการสตรีและสถาบันครอบครัว",
+        "a": [
+            {
+                "t": "เป็นองค์กรหลักในการส่งเสริมความเสมอภาคหญิงชาย",
+                "ok": false
+            },
+            {
+                "t": "สร้างสังคมที่ปราศจากความรุนแรง",
+                "ok": false
+            },
+            {
+                "t": "เสริมสร้างความเข้มแข็งของสถาบันครอบครัว",
+                "ok": false
+            },
+            {
+                "t": "ให้บริการสวัสดิการสังคมแก่ผู้สูงอายุและคนพิการ",
+                "ok": true
+            }
+        ],
+        "ex": "การให้บริการสวัสดิการแก่ผู้สูงอายุและคนพิการเป็นภารกิจของกรมส่งเสริมและพัฒนาคุณภาพชีวิตคนพิการ และกรมกิจการผู้สูงอายุ ตามลำดับ สค. จะมุ่งเน้นที่สตรี ครอบครัว และความเท่าเทียมทางเพศ"
+    },
+    {
+        "q": "\"DWF\" เป็นคำย่อภาษาอังกฤษของหน่วยงานใด",
+        "a": [
+            {
+                "t": "Department of Social Development and Welfare",
+                "ok": false
+            },
+            {
+                "t": "Department of Women's Affairs and Family Development",
+                "ok": true
+            },
+            {
+                "t": "Department of Women's Foundation",
+                "ok": false
+            },
+            {
+                "t": "Department of Family Welfare",
+                "ok": false
+            }
+        ],
+        "ex": "DWF ย่อมาจาก Department of Women's Affairs and Family Development ซึ่งคือชื่อภาษาอังกฤษของกรมกิจการสตรีและสถาบันครอบครัว"
+    },
+    {
+        "q": "พระราชบัญญัติความเท่าเทียมระหว่างเพศ พ.ศ. 2558 มีวัตถุประสงค์หลักเพื่ออะไร",
+        "a": [
+            {
+                "t": "กำหนดบทลงโทษผู้ที่กระทำความรุนแรงในครอบครัว",
+                "ok": false
+            },
+            {
+                "t": "คุ้มครองและป้องกันมิให้มีการเลือกปฏิบัติโดยไม่เป็นธรรมระหว่างเพศ",
+                "ok": true
+            },
+            {
+                "t": "ส่งเสริมให้สตรีมีบทบาททางการเมืองมากขึ้น",
+                "ok": false
+            },
+            {
+                "t": "จัดตั้งกองทุนเพื่อพัฒนาสตรีและครอบครัว",
+                "ok": false
+            }
+        ],
+        "ex": "หัวใจสำคัญของ พ.ร.บ. ฉบับนี้ คือการขจัดการเลือกปฏิบัติด้วยเหตุแห่งเพศในทุกรูปแบบ เพื่อให้ทุกคนได้รับโอกาสและการปฏิบัติที่เท่าเทียมกัน"
+    },
+    {
+        "q": "ตาม พ.ร.บ. ความเท่าเทียมระหว่างเพศ พ.ศ. 2558 \"การเลือกปฏิบัติโดยไม่เป็นธรรมระหว่างเพศ\" หมายถึงอะไร",
+        "a": [
+            {
+                "t": "การกระทำหรือละเว้นการกระทำใดๆ ที่เป็นการแบ่งแยก กีดกัน หรือจำกัดสิทธิประโยชน์ เพราะเหตุที่บุคคลเป็นเพศชายหรือเพศหญิง",
+                "ok": true
+            },
+            {
+                "t": "การใช้ความรุนแรงทางร่างกายต่อบุคคลในครอบครัว",
+                "ok": false
+            },
+            {
+                "t": "การไม่ให้โอกาสในการศึกษาแก่เด็กหญิง",
+                "ok": false
+            },
+            {
+                "t": "การจ่ายค่าจ้างที่ไม่เท่ากันสำหรับงานประเภทเดียวกัน",
+                "ok": false
+            }
+        ],
+        "ex": "เป็นนิยามตามมาตรา 3 ของกฎหมาย ซึ่งครอบคลุมการกระทำทุกรูปแบบที่สร้างความไม่เท่าเทียมเพราะเหตุแห่งเพศ"
+    },
+    {
+        "q": "คณะกรรมการวินิจฉัยการเลือกปฏิบัติโดยไม่เป็นธรรมระหว่างเพศ (วลพ.) มีอำนาจหน้าที่ตามข้อใด",
+        "a": [
+            {
+                "t": "จับกุมผู้กระทำความผิดตามกฎหมาย",
+                "ok": false
+            },
+            {
+                "t": "พิจารณาวินิจฉัยคำร้องเรียนกรณีมีการเลือกปฏิบัติฯ",
+                "ok": true
+            },
+            {
+                "t": "ออกกฎหมายลำดับรองเพื่อบังคับใช้",
+                "ok": false
+            },
+            {
+                "t": "บริหารจัดการกองทุนส่งเสริมความเท่าเทียมระหว่างเพศ",
+                "ok": false
+            }
+        ],
+        "ex": "คณะกรรมการ วลพ. เป็นกลไกหลักในการรับเรื่องร้องเรียนและวินิจฉัยชี้ขาดว่าการกระทำนั้นๆ เข้าข่ายเป็นการเลือกปฏิบัติโดยไม่เป็นธรรมระหว่างเพศหรือไม่"
+    },
+    {
+        "q": "ตาม พ.ร.บ. คุ้มครองผู้ถูกกระทำด้วยความรุนแรงในครอบครัว พ.ศ. 2550 ข้อใดถือเป็น \"ความรุนแรงในครอบครัว\"",
+        "a": [
+            {
+                "t": "การทะเลาะเบาะแว้งของคู่สมรสเรื่องค่าใช้จ่าย",
+                "ok": false
+            },
+            {
+                "t": "การลงโทษบุตรโดยการตีเพื่อให้หลาบจำ",
+                "ok": false
+            },
+            {
+                "t": "การกระทำใดๆ ที่มุ่งประสงค์ให้เกิดอันตรายแก่ร่างกาย จิตใจ หรือสุขภาพ",
+                "ok": true
+            },
+            {
+                "t": "การไม่เชื่อฟังคำสั่งสอนของบิดามารดา",
+                "ok": false
+            }
+        ],
+        "ex": "นิยามของความรุนแรงในครอบครัวครอบคลุมทั้งการกระทำที่ส่งผลต่อร่างกาย จิตใจ สุขภาพ หรือการบังคับขู่เข็ญในลักษณะที่มิชอบ"
+    }
+];
+        
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let showingResults = false;
+
+        function init() {
+            try {
+                // Setup logo
+                if (LOGO_URL) {
+                    document.getElementById('logo-img').src = LOGO_URL;
+                    document.getElementById('logo-img').style.display = 'block';
+                    document.getElementById('logo-placeholder').style.display = 'none';
+                }
+                
+                // Setup contact links
+                document.getElementById('line-contact').href = `https://line.me/R/ti/p/${LINE_OA_ID}`;
+                document.getElementById('shop-link').href = SHOP_URL;
+                
+                // Initialize quiz
+                if (quizData.length > 0) {
+                    document.getElementById('total-q').textContent = quizData.length;
+                    userAnswers = new Array(quizData.length).fill(null);
+                    showQuestion();
+                } else {
+                    document.getElementById('question-container').innerHTML = '<p style="text-align: center; color: #dc3545; font-size: 18px;">⚠️ ไม่มีข้อมูลแบบทดสอบ</p>';
+                }
+                
+            } catch (e) {
+                console.error('Error initializing quiz:', e);
+                document.getElementById('question-container').innerHTML = '<p style="text-align: center; color: #dc3545; font-size: 18px;">⚠️ เกิดข้อผิดพลาดในการโหลดข้อมูลแบบทดสอบ</p>';
+            }
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= quizData.length) {
+                showResults();
+                return;
+            }
+
+            const q = quizData[currentQuestion];
+            const container = document.getElementById('question-container');
+            
+            let html = `
+                <div class="lnwq-question">
+                    <h3>ข้อ ${currentQuestion + 1}. ${q.q}</h3>
+                    <div class="lnwq-choices">
+            `;
+            
+            q.a.forEach((choice, index) => {
+                const letter = ['ก', 'ข', 'ค', 'ง'][index];
+                const selected = userAnswers[currentQuestion] === index ? 'selected' : '';
+                html += `
+                    <div class="lnwq-choice ${selected}" onclick="selectAnswer(${index})">
+                        <strong>${letter}.</strong>&nbsp;&nbsp;${choice.t}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                    <div class="lnwq-explanation" id="explanation-${currentQuestion}">
+                        <strong>💡 คำอธิบาย:</strong> ${q.ex}
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            // Update navigation
+            document.getElementById('current-q').textContent = currentQuestion + 1;
+            document.getElementById('prev-btn').disabled = currentQuestion === 0;
+            document.getElementById('next-btn').textContent = currentQuestion === quizData.length - 1 ? '🏁 ดูผลลัพธ์' : 'ถัดไป →';
+        }
+
+        function selectAnswer(index) {
+            userAnswers[currentQuestion] = index;
+            
+            // Update visual selection
+            const choices = document.querySelectorAll('.lnwq-choice');
+            choices.forEach((choice, i) => {
+                choice.classList.remove('selected', 'correct', 'wrong');
+                if (i === index) {
+                    choice.classList.add('selected');
+                }
+            });
+            
+            // Show explanation after a short delay
+            setTimeout(() => {
+                document.getElementById(`explanation-${currentQuestion}`).classList.add('show');
+                
+                // Show correct/wrong colors
+                const q = quizData[currentQuestion];
+                choices.forEach((choice, i) => {
+                    if (q.a[i].ok) {
+                        choice.classList.add('correct');
+                    } else if (i === index && !q.a[i].ok) {
+                        choice.classList.add('wrong');
+                    }
+                });
+            }, 300);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        function showResults() {
+            let correct = 0;
+            userAnswers.forEach((answer, i) => {
+                if (answer !== null && quizData[i].a[answer].ok) {
+                    correct++;
+                }
+            });
+            
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('result-content').classList.remove('hidden');
+            document.getElementById('final-score').textContent = `${correct}/${quizData.length}`;
+            
+            let message = '';
+            const percentage = (correct / quizData.length) * 100;
+            if (percentage >= 90) {
+                message = '🎉 ยอดเยี่ยมมาก! คุณมีความรู้ในเรื่องนี้เป็นอย่างดี';
+            } else if (percentage >= 80) {
+                message = '👏 ดีเยี่ยม! คุณมีความเข้าใจที่ดีมาก';
+            } else if (percentage >= 70) {
+                message = '👍 ดีมาก! คุณมีพื้นฐานความรู้ที่ดี';
+            } else if (percentage >= 60) {
+                message = '😊 ดี! ควรศึกษาเพิ่มเติมในบางหัวข้อ';
+            } else if (percentage >= 50) {
+                message = '🤔 พอใช้ ควรทบทวนและศึกษาเพิ่มเติม';
+            } else {
+                message = '📚 ควรศึกษาเพิ่มเติม เพื่อเพิ่มพูนความรู้';
+            }
+            
+            document.getElementById('score-message').textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(quizData.length).fill(null);
+            document.getElementById('quiz-content').classList.remove('hidden');
+            document.getElementById('result-content').classList.add('hidden');
+            showQuestion();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+<script src="https://public-frontend-cos.metadl.com/commonfile/appPlugins-prod-1757257819217.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script></body>
+</html>
