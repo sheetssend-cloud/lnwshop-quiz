@@ -1,0 +1,118 @@
+﻿{
+    "version": "1.0.0",
+    "app_name": "สร้างภาพ ADS",
+    "locale_default": "th-TH",
+    "ui_text_th": {
+        "cta_button": "สร้างภาพ ADS",
+        "q1": "กรุณาแนบรูปที่ต้องการให้ระบบวิเคราะห์ (จำเป็น)",
+        "q2": "แจ้งสิ่งที่คุณต้องการให้ระบบปรับแต่งภาพ (เช่น โทนสี/อารมณ์/สไตล์)",
+        "processing": "กำลังประมวลผล…",
+        "done": "สร้าง PROMPT เสร็จแล้ว",
+        "policy_reminder": "โปรดใช้งานเฉพาะภาพที่คุณมีสิทธิ์ และระบบจะไม่ลบ/แก้ไขลายน้ำหรือโลโก้"
+    },
+    "modes": {
+        "button_flow": {
+            "enabled": true,
+            "questions": [
+                {
+                    "id": "image_file",
+                    "label": "@ui_text_th.q1",
+                    "type": "image",
+                    "required": true
+                },
+                {
+                    "id": "edit_brief",
+                    "label": "@ui_text_th.q2",
+                    "type": "textarea",
+                    "required": false
+                }
+            ],
+            "on_submit": "pipeline"
+        },
+        "direct_upload_flow": {
+            "enabled": true,
+            "trigger": "image_dropped_without_button",
+            "on_receive": "pipeline"
+        }
+    },
+    "input_schema": {
+        "image_file": {
+            "type": "image",
+            "formats": [ "jpg", "jpeg", "png", "webp" ]
+        },
+        "edit_brief": {
+            "type": "string",
+            "maxLength": 500
+        }
+    },
+    "safety": {
+        "allow_only_user_owned_or_licensed_images": true,
+        "reject_if_detect_copyright_watermark_logo": {
+            "action": "warn_and_continue_without_removal",
+            "message_th": "พบสัญลักษณ์ลิขสิทธิ์/โลโก้/ลายน้ำ ระบบจะไม่ลบหรือดัดแปลงส่วนดังกล่าว"
+        },
+        "exclude_text_and_logos_in_outputs": true
+    },
+    "pipeline": [
+        "analyze_image_content",
+        "extract_composition_geometry",
+        "infer_subject_materials_colors",
+        "map_style_from_edit_brief_or_image",
+        "generate_five_variations_prompts",
+        "return_output"
+    ],
+    "prompt_rules": {
+        "language": "th-TH",
+        "must_include": [
+            "องค์ประกอบหลัก (subject/composition)",
+            "มุมกล้อง/เลนส์/ระยะ",
+            "แสงและบรรยากาศ",
+            "พาเลตต์สี",
+            "พื้นผิว/วัสดุ",
+            "พื้นหลังและพื้นที่ว่างสำหรับจัดวางข้อความภายหลัง"
+        ],
+        "must_exclude": [
+            "ตัวอักษรทุกชนิด",
+            "โลโก้ แบรนด์ มาร์ค หรือสัญลักษณ์ลิขสิทธิ์",
+            "ลายน้ำ"
+        ],
+        "negative_prompt_seeds_th": [
+            "ไม่มีตัวอักษร",
+            "ไม่มีโลโก้",
+            "ไม่มีลายน้ำ",
+            "ไม่แสดงฉลากแบรนด์",
+            "ภาพสะอาด พื้นหลังไม่รก"
+        ]
+    },
+    "output_contract": {
+        "type": "object",
+        "properties": {
+            "prompts": {
+                "type": "array",
+                "minItems": 5,
+                "maxItems": 5,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string" },
+                        "title_th": { "type": "string" },
+                        "prompt_th": { "type": "string" },
+                        "negative_prompt_th": { "type": "string" },
+                        "style_tags": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        },
+                        "seed": { "type": "integer" },
+                        "aspect_ratio": {
+                            "type": "string",
+                            "enum": [ "1:1", "3:4", "4:5", "16:9", "9:16" ]
+                        }
+                    },
+                    "required": [ "id", "prompt_th", "negative_prompt_th", "aspect_ratio" ]
+                }
+            },
+            "preview_hints_th": { "type": "string" }
+        },
+        "required": [ "prompts" ]
+    }
+}
